@@ -5,10 +5,13 @@ var http = require('http');
 var app = express();
 
 // Project Settings
-//
+
+var env = process.env.NODE_ENV || 'development';
+
 app.set('port', process.env.PORT || 3000);
 app.set('views', (__dirname + '/views'));
 app.set('view engine', 'jade');
+app.set('view options', { layout: false });
 app.use(express.favicon());
 app.use(express.logger('dev'));
 app.use(express.bodyParser());
@@ -18,7 +21,7 @@ app.use(express.static(__dirname + '/public'));
 
 // Routes
 app.get('/', function(req, res){
-  res.render('index.jade');
+  res.render('index.jade', { title : 'Gamut - Home' });
 });
 
 
