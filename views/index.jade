@@ -7,6 +7,12 @@ block append js
 
 block content
   h1 Project Gamut
-  p Brand new content!
-  p Extra yay
+  form(name="new User", method='post', action="/game")
+    label User name: 
+    input(type="text", name="user")
+    br
+    input(type='radio', value="standard", name='standard', checked) 
+    label standard
+    br
+    button#newGame New Game
   div#debug
