@@ -7,6 +7,16 @@ block append js
 
 block content
   h1 Project Gamut
-  p Brand new content!
-  p Extra yay
+  form(method='post')
+    label(for='name') Name:
+    input(type='text', name='name', placeholder="alias", required)
+    br
+    label(for='gameSize') Game Size:
+    select(name='gameSize')
+      option(value='small') Small (20x20)
+      option(value='medium') Medium (30x30)
+      option(value='large') Large (50x50)
+    br
+    input(type='submit') Look for Game
+
   div#debug

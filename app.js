@@ -19,10 +19,16 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
+
+
 // Routes
 app.get('/', function(req, res){
   res.render('index.jade', { title : 'Gamut - Home' });
 });
+
+// app.post('/'), function(req, res) {
+//   req.name.
+// }
 
 
 // Socket Stuff
