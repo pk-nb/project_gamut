@@ -2,13 +2,11 @@ var express = require('express');
 var jade = require('jade');
 var http = require('http');
 
+// Project Initialization & Settings
 var app = express();
-
-// Project Settings
-
 var env = process.env.NODE_ENV || 'development';
 
-app.set('port', process.env.PORT || 3000);
+//app.set('port', process.env.PORT || 3000);
 app.set('views', (__dirname + '/views'));
 app.set('view engine', 'jade');
 app.set('view options', { layout: false });
@@ -20,26 +18,12 @@ app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
 
-
-// Routes
-app.get('/', function(req, res){
-  res.render('index.jade', { title : 'Gamut - Home' });
-});
-app.post('/game', function(req, res){
-  res.render('game.jade', { title : 'Gamut - Game' });
-});
-
-// app.post('/'), function(req, res) {
-//   req.name.
-// }
-
-
-// Socket Stuff
+// Socket Configuration
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
+require('./app/sockets')(io);
 
-io.sockets.on('connection', function (socket) {
-
-});
+// Routes
+require('./app/routes')(app);
 
 server.listen(3000);
