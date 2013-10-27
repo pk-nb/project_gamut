@@ -25,7 +25,8 @@ module.exports = function (grunt) {
         tasks: ['develop', 'delayed-livereload']
       },
       js: {
-        files: ['public/js/*.js'],
+        files: ['public/**/*.js'],
+        //tasks: ['concat'],
         options: {
           livereload: reloadPort
         },
@@ -62,7 +63,16 @@ module.exports = function (grunt) {
           ext: '.css'
         }]
       }
-    }
+    } //,
+    // concat: {
+    //   options: {
+    //     separator: ';',
+    //   },
+    //   dist: {
+    //     src: ['public/js/dev/*.js'],
+    //     dest: 'public/js/main.js',
+    //   },
+    // }
   });
 
   grunt.config.requires('watch.server.files');
@@ -87,6 +97,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-develop');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-sass');
+  grunt.loadNpmTasks('grunt-contrib-concat');
 
-  grunt.registerTask('default', ['develop', 'sass', 'watch']);
+  // Register concat if desired
+  grunt.registerTask('default', ['sass', 'develop', 'watch']);
 };
