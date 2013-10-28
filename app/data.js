@@ -1,9 +1,3 @@
-var games = {
-  small  : { size : 20 }
-  medium : { size : 30 }
-  large  : { size : 50 }
-};
-
 module.exports = {
 
   // Using javascript file as temp. data storage for now
@@ -11,10 +5,14 @@ module.exports = {
   // var users = {}
 
   // Make a queue of sockets that have not been connected yet
-  var smallQueue = [];
-  var mediumQueue = [];
-  var largeQueue = [];
+  smallQueue:   [],
+  mediumQueue:  [],
+  largeQueue:   [],
 
-
+  sizes : {
+    small  : { id : 'small',  size : 20, description : "Small Board (20x20)" },
+    medium : { id : 'medium', size : 30, description : "Medium Board (30x30)" },
+    large  : { id : 'large',  size : 50, description : "Large Board (50x50)" }
+  }
 
 }
