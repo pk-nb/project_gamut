@@ -7,3 +7,9 @@ $text-color: #911;
 h1 {
   color: $text-color;
 }
+
+#feedback {
+  min-width: 500px;
+  min-height: 200px;
+  background-color: #ddd;
+}

@@ -7,16 +7,19 @@ block append js
 
 block content
   h1 Project Gamut
-  form(name="newGame", action='')#newGameForm
-    fieldset
-      label(for='name') Name:
-      input(type='text', name='name', placeholder="alias", required)
-      br
-      label(for='gameSize') Game Size:
-      select(name='gameSize')
-        each size in gameSizes
-          option(value=size.id)= size.description
-      br
-      button#submit Start Game
+  div#newGameDiv
+    h2 Look for a game
+    form(name="newGame", action='')#newGameForm
+      fieldset
+        label(for='name') Name:
+        input(type='text', name='name', placeholder="alias", required)
+        br
+        label(for='gameSize') Game Size:
+        select(name='gameSize')
+          each size in gameSizes
+            option(value=size.id)= size.description
+        br
+        button#submit Start Game
 
+  div#feedback
   div#debug

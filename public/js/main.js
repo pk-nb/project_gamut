@@ -1,26 +1,32 @@
 var socket = io.connect();
 
 
+
+function printFeedback(string) {
+  $('#feedback').append("<p>" + string + "</p>");
+}
+
 /* Socket
  *************************************/
 function startGame(gameParams) {
-
-
+  socket.emit('newGame', gameParams);
+  $('#newGameDiv').hide();
+  $('#feedback').show();
+  // View manimpulation (hide form, load game div)
 }
 
-
+// GETTING message Display message on client-recieve
+socket.on('gameStart', function(data) {
+  console.log(data);
+  printFeedback(data.self + " VS " + data.opponent);
+});
 
 
 /* View Binding
  *************************************/
 $(function() {
 
-  // $('#submit').click( function(e) {
-  //   e.preventDefault();
-  //   this.checkValidity();
-  //   console.log("Form intercepted");
-  //   return false;
-  // });
+  $('#feedback').hide();
 
   $('#newGameForm').on('submit', function(e) {
 

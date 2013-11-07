@@ -47,3 +47,8 @@ table {
 
 h1 {
   color: #991111; }
+
+#feedback {
+  min-width: 500px;
+  min-height: 200px;
+  background-color: #ddd; }

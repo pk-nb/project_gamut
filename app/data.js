@@ -2,7 +2,7 @@ module.exports = {
 
   // Using javascript file as temp. data storage for now
 
-  // var users = {}
+  users: [],
 
   // Make a queue of sockets that have not been connected yet
   smallQueue:   [],
