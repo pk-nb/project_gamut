@@ -10,8 +10,6 @@ module.exports = function(io) {
     // New Game
     socket.on('newGame', function (gameData) {
 
-      console.dir(socket);
-
       var userName = gameData[0].value;
 
       // Prevent duplicate names
@@ -24,7 +22,6 @@ module.exports = function(io) {
         return;
       }
 
-      //console.dir(data.users);
       var userGameSize = gameData[1].value;
 
       // Store userData in wait queue if no waiting players
@@ -53,6 +50,7 @@ module.exports = function(io) {
 
         // Tell client to go into waiting mode
         socket.join(userName);
+        // send message here (display waiting message)
 
       }
       else {
@@ -61,7 +59,7 @@ module.exports = function(io) {
         var waiting = data[userGameSize + "Queue"].pop();
         socket.join(waiting.name);
         console.log("Connected Games");
-        io.sockets.in(waiting.name).emit("gameStart", {self: userName, opponent: waiting.name});
+        io.sockets.in(waiting.name).emit("gameStart", {room: waiting.name, self: userName, opponent: waiting.name});
       }
 
 
@@ -69,7 +67,22 @@ module.exports = function(io) {
     }); // END startGame
 
 
-  // Room play
+  // Message Forwarder
+  socket.on("broadcastGameMessage", function(data) {
+    // Forward the message to all people in room except sending socket
+    if (data.room !== null) {
+      socket.broadcast.to(data.room).emit(data.name, data.message);
+    }
+  });
+
+  socket.on("emitGameMessage", function(data) {
+    // Forward the message to all people in room
+    if (data.room !== null) {
+      io.sockets.in(data.room).emit(data.name, data.message);
+    }
+  });
+
+
 
   }); // End .on(connection)
 
