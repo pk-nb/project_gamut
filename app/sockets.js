@@ -34,8 +34,8 @@ module.exports = function(io) {
 
       var userGameSize = gameData[1].value;
 
-      if (data.queues[userGameSize] !== null) {
-          data.queues[userGameSize].push(socket.id);
+      if (us.has(data.queues, userGameSize)) {
+        data.queues[userGameSize].push(socket.id);
       }
       else {
         console.log("Invalid game size");
@@ -43,86 +43,58 @@ module.exports = function(io) {
         return;
       }
 
-      // ASYNC Series VV
 
-      // Store and Link if necessary
-      // ---------------------------------------------
-      async.parallel([
-        socket.set('userName', userName),
-        socket.set('gameSize', userGameSize)
-      ],
-      function() {
-        if (data.queues[userGameSize] >= 2) {
-          var socket1 = data.queues[userGameSize].pop();
-          var socket2 = data.queues[userGameSize].pop();
+      // Set user information, then check if two games can be connected
+      socket.set('userName', userName , function() {
+        socket.set('gameSize', userGameSize, function() {
+          if (data.queues[userGameSize].length >= 2) {
+            var socketid1 = data.queues[userGameSize].pop();
+            var socketid2 = data.queues[userGameSize].pop();
 
-          var roomID  = uuid.v4();
-          socket.set('roomID', roomID, function() {
-            socket1.join(roomID);
-            socket2.join(roomID);
-            io.sockets.in(roomID).emit("gameStart", {room: roomID, self: userName, opponent: waiting.name});
-          });
+            var roomID  = uuid.v4(); // Generate a unique room name ID
+            socket.set('roomID', roomID, function() {
+              io.sockets.socket(socketid1).join(roomID);
+              io.sockets.socket(socketid2).join(roomID);
 
-        }
-        else {
-          // Tell client to go into waiting mode
-          socket.emit('waiting', null);
-        }
-      });
-
-
-      // If queue has more than one person waiting, pop them off
-      // TODO: Event emit later? For now leave here
-
-
-
-      // END ASYNC
-
-
-
-      // Store userData in wait queue if no waiting players
-      // if (data[userGameSizeQueue].length === 0) {
-      //   var queueData = {};
-      //   queueData.name = userName;
-      //   queueData.socket = socketID;
-
-
-
-      //   socket.join(userName);
-
-      // }
-      // else {
-      //   // If we found a another item in the queue then put both users in room
-      //   // and send start game message
-      //   var waiting = data[userGameSizeQueue].pop();
-      //   socket.join(waiting.name);
-      //   console.log("Connected Games into room " + waiting.name);
-      //   io.sockets.in(waiting.name).emit("gameStart", {room: waiting.name, self: userName, opponent: waiting.name});
-      // }
-      // console.log(io.sockets.manager.rooms);
+              io.sockets.socket(socketid1).get('userName', function(err, name1) {
+                io.sockets.socket(socketid2).get('userName', function(err, name2) {
+                  io.sockets.in(roomID).emit("gameStart", {room: roomID, self: name1, opponent: name2});
+                });
+              });
+            }); //End socket.set
+          }
+          else {
+            // Tell client to go into waiting mode
+            socket.emit('waiting', null);
+          }
+        });
+      }); // END socket.set
     }); // END startGame
 
 
+    // Disconnect Logic (drop if in queue, gamesave logic if in game)
+    socket.on('disconnect', function() {
+      if (socket.id === us.union(data.queues.small, data.))
+    });
+
+    // Message Forwarders
+    socket.on('broadcastGameMessage', function(data) {
+      // Forward the message to all people in room except sending socket
+      if (data.room !== null) {
+        socket.broadcast.to(data.room).emit(data.name, data.message);
+      }
+    });
+
+    socket.on('emitGameMessage', function(data) {
+      // Forward the message to all people in room
+      if (data.room !== null) {
+        io.sockets.in(data.room).emit(data.name, data.message);
+      }
+    });
 
 
-  // Message Forwarders
-  socket.on("broadcastGameMessage", function(data) {
-    // Forward the message to all people in room except sending socket
-    if (data.room !== null) {
-      socket.broadcast.to(data.room).emit(data.name, data.message);
-    }
-  });
 
-  socket.on("emitGameMessage", function(data) {
-    // Forward the message to all people in room
-    if (data.room !== null) {
-      io.sockets.in(data.room).emit(data.name, data.message);
-    }
-  });
-
-
-
-  }); // End .on(connection)
+  }); // END .on(connection)
 
 }
 
