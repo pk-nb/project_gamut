@@ -1,22 +1,10 @@
-var socket = io.connect();
-
-
-// Global app parameters
-var currentRoom = null;
-var userName    = "nobody";
-
-
-function printFeedback(string) {
-  $('#feedback').append("<p>" + string + "</p>");
-}
-
 /* Socket
  *************************************/
 function startGame(gameParams) {
   socket.emit('newGame', gameParams);
   $('#newGameDiv').hide();
-  $('#feedback').show();
-  // View manimpulation (hide form, load game div)
+  $('#debug').show();
+  // View manipulation (hide form, load game div)
 }
 
 function sendPoke() {
@@ -48,33 +36,4 @@ socket.on('gameStart', function(data) {
   console.log(data);
   printFeedback(data.self + " VS " + data.opponent);
   currentRoom = data.room; // Save the room so we know who to talk to
-  console.log()
-});
-
-
-/* View Binding
- *************************************/
-$(function() {
-
-  $("#sendPoke").click(function() { sendPoke() });
-  $('#feedback').hide();
-
-  $('#newGameForm').on('submit', function(e) {
-
-    // HTML5 Form valdation for supporting browsers
-    if (this.checkValidity()) {};
-
-    e.preventDefault();
-    console.log("Form intercept!");
-
-    // Get data : value list of form inputs
-    var formParams = $(this).serializeArray();
-    userName = formParams[0].value;
-
-
-    console.log(formParams);
-    startGame(formParams);
-  });
-
-
 });

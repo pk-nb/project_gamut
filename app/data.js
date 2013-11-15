@@ -1,13 +1,14 @@
 module.exports = {
 
   // Using javascript file as temp. data storage for now
-
   users: [],
 
   // Make a queue of sockets that have not been connected yet
-  smallQueue:   [],
-  mediumQueue:  [],
-  largeQueue:   [],
+  queues : {
+    small:   [],
+    medium:  [],
+    large:   []
+  },
 
   sizes : {
     small  : { id : 'small',  size : 20, description : "Small Board (20x20)" },

@@ -1,73 +1,111 @@
-var data = require('./data');
-var util = require('util');
-var us   = require('underscore');
+var data    = require('./data');
+var util    = require('util');
+var us      = require('underscore');
+var uuid    = require('node-uuid');
+var async   = require('async');
+
+function sendError(socket, errorMessage) {
+  socket.emit('error', errorMessage);
+}
 
 module.exports = function(io) {
 
   io.sockets.on('connection', function (socket) {
 
-
     // New Game
     socket.on('newGame', function (gameData) {
 
+      // Validating UserName and GameSize
+      // ---------------------------------------------
+      //var formValues = us.values(gameData);
+      // console.log(gameData);
+      // console.log(formValues);
       var userName = gameData[0].value;
 
       // Prevent duplicate names
       if (!us.contains(data.users, userName)) {
         data.users.push(userName);
-
-      } else {
-        // Send message back to client
+      }
+      else {
         console.log("Name duplicate rejected");
+        sendError(socket, "nameDuplicate");
         return;
       }
 
       var userGameSize = gameData[1].value;
 
-      // Store userData in wait queue if no waiting players
-      if (data[userGameSize + "Queue"].length === 0) {
-
-        var queueData = {};
-        queueData.name = userName;
-        //queueData.socket = socket;
-
-        switch (userGameSize) {
-          case "small":  // Put in small queue
-            data.smallQueue.push(queueData);
-            break;
-          case "medium": // Put in medium queue
-            data.mediumQueue.push(queueData);
-            break;
-          case "large":  // Put in large
-            data.largeQueue.push(queueData);
-            break;
-          default:
-            // invalid game size
-            // send message back to user about error
-            console.log("Invalid game size");
-            break;
-        }
-
-        // Tell client to go into waiting mode
-        socket.join(userName);
-        // send message here (display waiting message)
-
+      if (data.queues[userGameSize] !== null) {
+          data.queues[userGameSize].push(socket.id);
       }
       else {
-        // If we found a another item in the queue then put both users in room
-        // and send start game message
-        var waiting = data[userGameSize + "Queue"].pop();
-        socket.join(waiting.name);
-        console.log("Connected Games");
-        io.sockets.in(waiting.name).emit("gameStart", {room: waiting.name, self: userName, opponent: waiting.name});
+        console.log("Invalid game size");
+        sendError(socket, "invalidSize");
+        return;
       }
 
+      // ASYNC Series VV
 
-      console.log(io.sockets.manager.rooms);
+      // Store and Link if necessary
+      // ---------------------------------------------
+      async.parallel([
+        socket.set('userName', userName),
+        socket.set('gameSize', userGameSize)
+      ],
+      function() {
+        if (data.queues[userGameSize] >= 2) {
+          var socket1 = data.queues[userGameSize].pop();
+          var socket2 = data.queues[userGameSize].pop();
+
+          var roomID  = uuid.v4();
+          socket.set('roomID', roomID, function() {
+            socket1.join(roomID);
+            socket2.join(roomID);
+            io.sockets.in(roomID).emit("gameStart", {room: roomID, self: userName, opponent: waiting.name});
+          });
+
+        }
+        else {
+          // Tell client to go into waiting mode
+          socket.emit('waiting', null);
+        }
+      });
+
+
+      // If queue has more than one person waiting, pop them off
+      // TODO: Event emit later? For now leave here
+
+
+
+      // END ASYNC
+
+
+
+      // Store userData in wait queue if no waiting players
+      // if (data[userGameSizeQueue].length === 0) {
+      //   var queueData = {};
+      //   queueData.name = userName;
+      //   queueData.socket = socketID;
+
+
+
+      //   socket.join(userName);
+
+      // }
+      // else {
+      //   // If we found a another item in the queue then put both users in room
+      //   // and send start game message
+      //   var waiting = data[userGameSizeQueue].pop();
+      //   socket.join(waiting.name);
+      //   console.log("Connected Games into room " + waiting.name);
+      //   io.sockets.in(waiting.name).emit("gameStart", {room: waiting.name, self: userName, opponent: waiting.name});
+      // }
+      // console.log(io.sockets.manager.rooms);
     }); // END startGame
 
 
-  // Message Forwarder
+
+
+  // Message Forwarders
   socket.on("broadcastGameMessage", function(data) {
     // Forward the message to all people in room except sending socket
     if (data.room !== null) {

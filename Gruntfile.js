@@ -26,7 +26,7 @@ module.exports = function (grunt) {
       },
       js: {
         files: ['public/**/*.js'],
-        //tasks: ['concat'],
+        tasks: ['concat'],
         options: {
           livereload: reloadPort
         },
@@ -63,16 +63,30 @@ module.exports = function (grunt) {
           ext: '.css'
         }]
       }
-    } //,
-    // concat: {
-    //   options: {
-    //     separator: ';',
-    //   },
-    //   dist: {
-    //     src: ['public/js/dev/*.js'],
-    //     dest: 'public/js/main.js',
-    //   },
-    // }
+    },
+    concat: {
+      // options: {
+      //   separator: ";\n\n",
+      // },
+      dist: {
+        src: [
+          'public/js/dev/globals.js',
+          'public/js/dev/game.js',
+          'public/js/dev/client_socket.js',
+          'public/js/dev/view.js'
+        ],
+        dest: 'public/js/main.min.js',
+      },
+    },
+    uglify: {
+      my_target: {
+        options: {
+        },
+        files: {
+          'public/js/main.min.js': ['public/js/main.min.js']
+        }
+      }
+    }
   });
 
   grunt.config.requires('watch.server.files');
@@ -98,7 +112,9 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-sass');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Register concat if desired
-  grunt.registerTask('default', ['sass', 'develop', 'watch']);
+  grunt.registerTask('default', ['sass', 'concat', 'develop', 'watch']);
+  grunt.registerTask('build', ['sass', 'concat', 'uglify', 'develop', 'watch']);
 };
