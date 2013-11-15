@@ -17,9 +17,6 @@ module.exports = function(io) {
 
       // Validating UserName and GameSize
       // ---------------------------------------------
-      //var formValues = us.values(gameData);
-      // console.log(gameData);
-      // console.log(formValues);
       var userName = gameData[0].value;
 
       // Prevent duplicate names
@@ -74,7 +71,13 @@ module.exports = function(io) {
 
     // Disconnect Logic (drop if in queue, gamesave logic if in game)
     socket.on('disconnect', function() {
-      if (socket.id === us.union(data.queues.small, data.))
+      var queued = us.union(data.queues.small, data.queues.medium, data.queues.large);
+
+      if (us.contains(queued, socket.id)) {
+        socket.get('gameSize', function(err, gameSize) {
+          data.queues[gameSize] = us.without(data.queues[gameSize], socket.id); // Drop from queue
+        });
+      }
     });
 
     // Message Forwarders
@@ -82,6 +85,7 @@ module.exports = function(io) {
       // Forward the message to all people in room except sending socket
       if (data.room !== null) {
         socket.broadcast.to(data.room).emit(data.name, data.message);
+
       }
     });
 
@@ -91,8 +95,6 @@ module.exports = function(io) {
         io.sockets.in(data.room).emit(data.name, data.message);
       }
     });
-
-
 
   }); // END .on(connection)
 
