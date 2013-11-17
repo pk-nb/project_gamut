@@ -1,5 +1,15 @@
-/* Socket
+/* Socket (echoes events to gamelogic)
  *************************************/
+
+ /*
+ internalobject = {
+  fucntion1
+  function2'
+  ...
+ }
+
+*/
+
 function startGame(gameParams) {
   socket.emit('newGame', gameParams);
   $('#newGameDiv').hide();
