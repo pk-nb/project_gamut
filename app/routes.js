@@ -3,7 +3,7 @@ var data = require('./data');
 module.exports = function(app) {
 
   app.get('/', function(req, res){
-    res.render('index.jade', { title : 'Gamut - Home', gameSizes : data.sizes });
+    res.render('index.jade', { title : 'Gamut - Home', gameSizes : data.types.sizes });
   });
 
   // app.post('/', function(req, res){

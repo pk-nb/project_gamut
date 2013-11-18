@@ -1,115 +1,131 @@
-var data    = require('./data');
-var util    = require('util');
-var us      = require('underscore');
-var uuid    = require('node-uuid');
-var async   = require('async');
-var EventEmitter = require(‘events’).EventEmitter;
+var data          = require('./data');
+var util          = require('util');
+var us            = require('underscore');
+var uuid          = require('node-uuid');
+var async         = require('async');
+var EventEmitter  = require('events').EventEmitter;
 
-// util.inherits(data, EventEmitter);
+// Modify Data object to have functions to trigger on event
+util.inherits(data.Queues, EventEmitter);
 
-// data.prototype.queueConnect
+// Put socket in queue, and send event if size over 2 to connect
+data.Queues.prototype.pushSocket = function(io, socket) {
+  socket.get('gameSize', function(err, gameSize) {
+    console.dir(queues);
+    queues[gameSize].push(socket.id);
+    if (queues[gameSize].length >= 2) {
+      queues.emit('connectTwo', io, gameSize);
+    }
+    else {
+      socket.emit('waiting', null);             // Tell client to go into waiting mode
+    }
+  });
+}
+
+// Connects two games on message of 2+ in queue
+var queues = new data.Queues();
+queues.on('connectTwo', function(io, userGameSize) {
+  var socketid1 = this[userGameSize].pop();
+  var socketid2 = this[userGameSize].pop();
+
+  var roomID  = uuid.v4();                      // Generate a unique room name ID
+  io.sockets.socket(socketid1).join(roomID);
+  io.sockets.socket(socketid2).join(roomID);
+
+  async.parallel([
+    function (callback) { io.sockets.socket(socketid1).get('userName',       callback); },
+    function (callback) { io.sockets.socket(socketid2).get('userName',       callback); },
+    function (callback) { io.sockets.socket(socketid1).set('roomID', roomID, callback); },
+    function (callback) { io.sockets.socket(socketid2).set('roomID', roomID, callback); }
+  ],
+  function(err, result) {
+    // Usernames in result[0] and result[1]
+    console.dir(result);
+    io.sockets.in(roomID).emit("gameStart", {room: roomID, self: result[0], opponent: result[1]});
+  });
+});
 
 
+// Validate client form, expecting array of objects with value fields
+// [ { ..., 'value' : userName }, {..., 'value': gameSize} ]
+function formValid(gameData) {
+  var userName = gameData[0].value;
+  var userGameSize = gameData[1].value;
+
+  // Prevent duplicate names
+  if (us.contains(data.users, userName)) {
+    console.log("Name duplicate rejected");
+    sendError(socket, "nameDuplicate");
+    return false;
+  }
+  // Validate gameSize
+  if (!us.has(queues, userGameSize)) {
+    queues[userGameSize].push(socket.id);
+    console.log("Invalid game size");
+    sendError(socket, "invalidSize");
+    return false;
+  }
+  return true;
+}
+
+
+// Send specificed error message to client
 function sendError(socket, errorMessage) {
   socket.emit('error', errorMessage);
 }
 
-module.exports = function(io) {
 
+module.exports = function(io) {
   io.sockets.on('connection', function (socket) {
 
-    // New Game
+    // Initial message from new game form on client
     socket.on('newGame', function (gameData) {
+      if (formValid) {
+        var userName = gameData[0].value;
+        var userGameSize = gameData[1].value;
 
-      // Validating UserName and GameSize
-      // ---------------------------------------------
-      var userName = gameData[0].value;
-
-      // Prevent duplicate names
-      if (!us.contains(data.users, userName)) {
         data.users.push(userName);
-      }
-      else {
-        console.log("Name duplicate rejected");
-        sendError(socket, "nameDuplicate");
-        return;
-      }
-
-      var userGameSize = gameData[1].value;
-
-      if (us.has(data.queues, userGameSize)) {
-        data.queues[userGameSize].push(socket.id);
-      }
-      else {
-        console.log("Invalid game size");
-        sendError(socket, "invalidSize");
-        return;
-      }
-
-
-      // Use .wait() to reduce complexity
-      // Set user information, then check if two games can be connected
-      socket.set('userName', userName , function() {
-        socket.set('gameSize', userGameSize, function() {
-          if (data.queues[userGameSize].length >= 2) {
-            var socketid1 = data.queues[userGameSize].pop();
-            var socketid2 = data.queues[userGameSize].pop();
-
-            var roomID  = uuid.v4(); // Generate a unique room name ID
-            io.sockets.socket(socketid1).join(roomID);
-            io.sockets.socket(socketid2).join(roomID);
-
-            io.sockets.socket(socketid1).get('userName', function(err, name1) {
-              io.sockets.socket(socketid2).get('userName', function(err, name2) {
-
-                // Store RoomID on sockets
-                io.sockets.socket(socketid1).set('roomID', roomID, function() {
-                  io.sockets.socket(socketid2).set('roomID', roomID, function() {
-                    // Emit signal to start game
-                    io.sockets.in(roomID).emit("gameStart", {room: roomID, self: name1, opponent: name2});
-                  });
-                }); // End set roomIDs
-              });
-            }); // End get usernames
-
-          }
-          else {
-            // Tell client to go into waiting mode
-            socket.emit('waiting', null);
-          }
+        // Store both vars then run call back pushing socket onto queue
+        async.parallel([
+          function(callback) { socket.set('userName', userName, callback); },
+          function(callback) { socket.set('gameSize', userGameSize, callback); }
+        ],
+        function() {
+          queues.pushSocket(io, socket);
         });
-      }); // END socket.set
+      }
     }); // END startGame
 
-
-    // Disconnect Logic (drop if in queue, gamesave logic if in game)
+    // Disconnect Logic (drop username, drop if in queue, optional gamesave logic)
     socket.on('disconnect', function() {
-      var queued = us.union(data.queues.small, data.queues.medium, data.queues.large);
+      // Clear username
+      socket.get('userName', function(err, userName) {
+        data.users = us.without(data.users, userName);
+      });
+
+      var queued = us.union(queues.small, queues.medium, queues.large);
       if (us.contains(queued, socket.id)) {
         socket.get('gameSize', function(err, gameSize) {
-          data.queues[gameSize] = us.without(data.queues[gameSize], socket.id); // Drop from queue
+          queues[gameSize] = us.without(queues[gameSize], socket.id); // Drop from queue
         });
       }
     });
 
     // Message Forwarders
-    socket.on('broadcastGameMessage', function(data) {
-      // Forward the message to all people in room except sending socket
+    // Forward the message to all people in room except sending socket
+    socket.on('broadcastGameMessage', function(message) {
       socket.get('roomID', function(err, roomID) {
-        // Optional data validation
-        socket.broadcast.to(roomID).emit(data.name, data.message);
+        socket.broadcast.to(roomID).emit(message.name, message.message);
       });
     });
 
-    socket.on('emitGameMessage', function(data) {
-      // Forward the message to all people in room
+    // Forward the message to all people in room
+    socket.on('emitGameMessage', function(message) {
       socket.get('roomID', function(err, roomID) {
-        io.sockets.in(roomID).emit(data.name, data.message);
+        io.sockets.in(roomID).emit(message.name, message.message);
       });
-
     });
 
   }); // END .on(connection)
-
-}
+} // END module.exports
 
