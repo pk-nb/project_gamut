@@ -1,20 +1,9 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
 
- /*
- internalobject = {
-  fucntion1,
-  function2
-  ...
- }
-
-*/
-
 function startGame(gameParams) {
   socket.emit('newGame', gameParams);
-  $('#newGameDiv').hide();
-  $('#debug').show();
-  // View manipulation (hide form, load game div)
+  pubsub.publish('newGameRequested');
 }
 
 function sendPoke() {
@@ -46,4 +35,5 @@ socket.on('gameStart', function(data) {
   console.log(data);
   printFeedback(data.self + " VS " + data.opponent);
   currentRoom = data.room; // Save the room so we know who to talk to
+  pubsub.publish('gameStart');
 });

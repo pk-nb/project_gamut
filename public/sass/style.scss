@@ -1,8 +1,9 @@
 @import "bourbon/bourbon";
 @import "_reset";
 @import "_flex";
+@import "_waiting_animation";
 
-$offwhite-color: #eeeeee;
+$offwhite-color: #EEEEEE;
 $primary-color: #3ACCCC;
 $secondary-color: #FFC749;
 $tertiary-color: #FA475C;
@@ -11,12 +12,23 @@ $tertiary-color: #FA475C;
   font-family: 'Raleway';
   src: url('webfonts/raleway_thin-webfont.eot?#iefix') format('embedded-opentype'),
        url('webfonts/raleway_thin-webfont.woff') format('woff'),
-       url('webfonts/raleway_thin-webfont.ttf')  format('truetype'),
+       url('webfonts/raleway_thin-webfont.ttf') format('truetype'),
        url('webfonts/raleway_thin-webfont.svg#svgFontName') format('svg');
 }
 
 body {
   font-family: 'Raleway', sans-serif;
+  background-color: $primary-color;
+}
+
+.logo {
+  display: inline-block;
+}
+
+.logotext {
+  display: inline-block;
+  font-size: 3em;
+  margin-left: 0.125em;
 }
 
 h1 {
@@ -27,6 +39,31 @@ h2 {
   font-size: 1.75em;
 }
 
+label {
+  font-size: 0.875em;
+  display: block;
+  font-family: sans-serif;
+  font-style: none;
+}
+
+input {
+  @include box-sizing(border-box);
+
+  width: 100%;
+  //border: 0;
+  margin: 0;
+  margin-top: 0px;
+  margin-bottom: 8px;
+  //margin-left: 0;
+  padding: 3px;
+}
+
+select {
+  @include box-sizing(border-box);
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 #gameContainer {
   color: $offwhite-color;
   position: absolute;
@@ -34,14 +71,14 @@ h2 {
   left: 0;
   right: 0;
   bottom: 0;
+  text-align: center;
   background-color: $primary-color;
-  text-align:center;
-  padding-top: 3em;
 }
 
 #newGameDiv {
   display: inline-block;
   text-align: left;
+  margin-top: 3em;
 }
 
 #submit {
@@ -52,26 +89,16 @@ h2 {
   background-color: $secondary-color;
   display: block;
   padding: 4px;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
   border-radius: 3px;
-  -webkit-box-shadow: 0px 4px 0px $tertiary-color, 0px 4px 10px rgba(30, 90, 30,.7);
-  -moz-box-shadow: 0px 4px 0px $tertiary-color, 0px 4px 10px rgba(30, 90, 30,.7);
   box-shadow: 0px 4px 0px $tertiary-color, 0px 4px 10px rgba(30, 90, 30,.7);
   width: 100%;
   text-align: center;
 
-  -webkit-transition: all .1s ease;
-  -moz-transition: all .1s ease;
-  -ms-transition: all .1s ease;
-  -o-transition: all .1s ease;
-  transition: all .1s ease;
+  @include transition(all 0.1s ease);
 }
 
 #submit:hover {
-    -webkit-box-shadow: 0px 3px 0px rgba(219,31,5,1), 0px 3px 6px rgba(0,0,0,.9);
-    -moz-box-shadow: 0px 3px 0px rgba(219,31,5,1), 0px 3px 6px rgba(0,0,0,.9);
-    box-shadow: 0px 3px 0px rgba(219,31,5,1), 0px 3px 6px rgba(0,0,0,.9);
+    box-shadow: 0px 3px 0px darken($tertiary-color, 10%), 0px 3px 6px rgba(30, 90, 30, .9);
     position: relative;
     top: 1px;
 }
