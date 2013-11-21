@@ -2,6 +2,18 @@ function printFeedback(string) {
   $('#debug').append("<p>" + string + "</p>");
 }
 
+var clockTimes = 0;
+pubsub.subscribe('clock', function() {
+  printFeedback("Ticktock " + clockTimes);
+  clockTimes = clockTimes + 1;
+});
+
+
+pubsub.subscribe('newGameRequested', function() {
+  $('#newGameDiv').hide();
+  $('#debug').show();
+});
+
 /* View Binding
  *************************************/
 $(function() {
@@ -25,6 +37,7 @@ $(function() {
     console.log(formParams);
     startGame(formParams);
   });
+
 
 
 });

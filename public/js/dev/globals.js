@@ -4,3 +4,5 @@ var pubsub = Pubsub.create();
 // Global app parameters
 var currentRoom = null;
 var userName    = "";
+
+var clockIntervalID = 0;
