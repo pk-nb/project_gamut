@@ -45,10 +45,63 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
+@font-face {
+  font-family: 'Raleway';
+  src: url("webfonts/raleway_thin-webfont.eot?#iefix") format("embedded-opentype"), url("webfonts/raleway_thin-webfont.woff") format("woff"), url("webfonts/raleway_thin-webfont.ttf") format("truetype"), url("webfonts/raleway_thin-webfont.svg#svgFontName") format("svg"); }
+
+body {
+  font-family: 'Raleway', sans-serif; }
+
 h1 {
-  color: #991111; }
+  font-size: 2em; }
+
+h2 {
+  font-size: 1.75em; }
+
+#gameContainer {
+  color: #eeeeee;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #3acccc;
+  text-align: center;
+  padding-top: 3em; }
+
+#newGameDiv {
+  display: inline-block;
+  text-align: left; }
+
+#submit {
+  border: 0;
+  position: relative;
+  color: #eeeeee;
+  text-decoration: none;
+  background-color: #ffc749;
+  display: block;
+  padding: 4px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: 0px 4px 0px #fa475c, 0px 4px 10px rgba(30, 90, 30, 0.7);
+  -moz-box-shadow: 0px 4px 0px #fa475c, 0px 4px 10px rgba(30, 90, 30, 0.7);
+  box-shadow: 0px 4px 0px #fa475c, 0px 4px 10px rgba(30, 90, 30, 0.7);
+  width: 100%;
+  text-align: center;
+  -webkit-transition: all .1s ease;
+  -moz-transition: all .1s ease;
+  -ms-transition: all .1s ease;
+  -o-transition: all .1s ease;
+  transition: all .1s ease; }
+
+#submit:hover {
+  -webkit-box-shadow: 0px 3px 0px #db1f05, 0px 3px 6px rgba(0, 0, 0, 0.9);
+  -moz-box-shadow: 0px 3px 0px #db1f05, 0px 3px 6px rgba(0, 0, 0, 0.9);
+  box-shadow: 0px 3px 0px #db1f05, 0px 3px 6px rgba(0, 0, 0, 0.9);
+  position: relative;
+  top: 1px; }
 
 #debug {
   min-width: 500px;
-  min-height: 200px;
-  background-color: #ddd; }
+  min-height: 200px; }

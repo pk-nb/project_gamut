@@ -3,8 +3,8 @@
 
  /*
  internalobject = {
-  fucntion1
-  function2'
+  fucntion1,
+  function2
   ...
  }
 

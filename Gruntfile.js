@@ -70,6 +70,7 @@ module.exports = function (grunt) {
       // },
       dist: {
         src: [
+          'public/js/lib/*',
           'public/js/dev/globals.js',
           'public/js/dev/game.js',
           'public/js/dev/client_socket.js',

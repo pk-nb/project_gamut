@@ -11,7 +11,6 @@ util.inherits(data.Queues, EventEmitter);
 // Put socket in queue, and send event if size over 2 to connect
 data.Queues.prototype.pushSocket = function(io, socket) {
   socket.get('gameSize', function(err, gameSize) {
-    console.dir(queues);
     queues[gameSize].push(socket.id);
     if (queues[gameSize].length >= 2) {
       queues.emit('connectTwo', io, gameSize);
@@ -40,7 +39,6 @@ queues.on('connectTwo', function(io, userGameSize) {
   ],
   function(err, result) {
     // Usernames in result[0] and result[1]
-    console.dir(result);
     io.sockets.in(roomID).emit("gameStart", {room: roomID, self: result[0], opponent: result[1]});
   });
 });
@@ -80,7 +78,7 @@ module.exports = function(io) {
 
     // Initial message from new game form on client
     socket.on('newGame', function (gameData) {
-      if (formValid) {
+      if (formValid(gameData)) {
         var userName = gameData[0].value;
         var userGameSize = gameData[1].value;
 
