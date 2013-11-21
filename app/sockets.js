@@ -46,7 +46,7 @@ queues.on('connectTwo', function(io, userGameSize) {
 
 // Validate client form, expecting array of objects with value fields
 // [ { ..., 'value' : userName }, {..., 'value': gameSize} ]
-function formValid(gameData) {
+function formValid(gameData, socket) {
   var userName = gameData[0].value;
   var userGameSize = gameData[1].value;
 
@@ -78,7 +78,7 @@ module.exports = function(io) {
 
     // Initial message from new game form on client
     socket.on('newGame', function (gameData) {
-      if (formValid(gameData)) {
+      if (formValid(gameData, socket)) {
         var userName = gameData[0].value;
         var userGameSize = gameData[1].value;
 
