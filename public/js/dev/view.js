@@ -14,6 +14,8 @@ pubsub.subscribe('newGameRequested', function() {
 pubsub.subscribe('gameStart', function() {
   $('#waitingMessage').fadeOut(300);
   $('#debug').fadeIn(600);
+  $('#debug').fadeIn(600);
+  $('#chat').fadeIn(600);
 });
 
 // Debug log
@@ -21,10 +23,16 @@ function printFeedback(string) {
   $('#debug').append("<p>" + string + "</p>");
 }
 
+function printChat(string) {
+  $('#chatEntries').append("<p>" + string + "</p>");
+}
+
 /* View Binding
  *************************************/
 $(function() {
 
+  $("#chatSubmit").click(function() {sentMessage();});
+  $('#chat').hide();
   $("#sendPoke").click(function() { sendPoke() });
   $('#debug').hide();
   $('h2#waitingMessage').hide();
@@ -46,5 +54,4 @@ $(function() {
     console.log(formParams);
     startGame(formParams);
   });
-
 });

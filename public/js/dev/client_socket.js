@@ -1,6 +1,15 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
 
+
+function sentMessage() {
+   if ($('#chatInput').val() != "") 
+   {
+      emitGameMessage('chatMessage', userName + ': ' +  $('#chatInput').val() );
+      $('#chatInput').val('');
+   }
+}
+
 function startGame(gameParams) {
   socket.emit('newGame', gameParams);
   pubsub.publish('newGameRequested');
@@ -29,6 +38,11 @@ function emitGameMessage(name, message) {
 socket.on('poke', function(data) {
   printFeedback(data);
 });
+
+socket.on('chatMessage', function(data) {
+  printChat(data);
+});
+
 
 // GETTING message Display message on client-recieve
 socket.on('gameStart', function(data) {
