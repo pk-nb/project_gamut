@@ -51,7 +51,7 @@ function formValid(gameData, socket) {
   var userGameSize = gameData[1].value;
 
   // Prevent duplicate names
-  if (us.contains(data.users, userName)) {
+  if (us.contains(data.users, userName) || userName.length == 0) {
     console.log("Name duplicate rejected");
     sendError(socket, "nameDuplicate");
     return false;

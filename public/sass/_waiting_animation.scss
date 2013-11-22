@@ -1,0 +1,46 @@
+// TODO: Change positioning of hexagons to prevent fixed width
+
+@mixin hexagon($x, $y, $delay) {
+  background-image: url("../images/hex.svg");
+  background-size: cover;
+  width: 20px;
+  height: 24px;
+  position: absolute;
+  z-index: 99;
+  opacity: 0;
+  top: $x;
+  left: $y;
+  @include animation(fadeInOut 3s linear infinite);
+  @include animation-delay($delay);
+}
+
+@include keyframes(fadeInOut) {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.hex1 { @include hexagon(20px, 620px, 3.3s) }
+.hex2 { @include hexagon(800x, 900px, 2.4s) }
+.hex3 { @include hexagon(400px, 40px, 2.9s) }
+.hex4 { @include hexagon(200px, 700px, 1.5s) }
+.hex5 { @include hexagon(600px, 400px, 1.0s) }
+.hex6 { @include hexagon(80px, 80px, 2.0s) }
+
+#waitingMessage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  margin-top: 20%;
+}
