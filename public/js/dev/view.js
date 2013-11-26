@@ -29,13 +29,17 @@ function printChat(string) {
 
 /* View Binding
  *************************************/
-$(function() {
+jQuery( document ).ready(function( $ ) {
 
   $("#chatSubmit").click(function() {sentMessage();});
   $('#chat').hide();
   $("#sendPoke").click(function() { sendPoke() });
-  $('#debug').hide();
   $('h2#waitingMessage').hide();
+
+  // Debug stuff
+  //$('#debug').hide();
+  $('#newGameDiv').hide();
+
 
   $('#newGameForm').on('submit', function(e) {
 

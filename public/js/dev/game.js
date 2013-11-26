@@ -1,7 +1,4 @@
 // Clock
-
-
-
 var clock = function() {
   console.log('ticktock');
   pubsub.publish('clock');

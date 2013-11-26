@@ -74,6 +74,7 @@ module.exports = function (grunt) {
           'public/js/dev/globals.js',
           'public/js/dev/game.js',
           'public/js/dev/client_socket.js',
+          'public/js/dev/snap.js',
           'public/js/dev/view.js'
         ],
         dest: 'public/js/main.min.js',
