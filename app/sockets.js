@@ -101,6 +101,12 @@ module.exports = function(io) {
         data.users = us.without(data.users, userName);
       });
 
+      // Clear timer
+      socket.get('timer', function(err, timer) {
+        timer = 0;
+        socket.set('timer', timer);
+      });
+
       var queued = us.union(queues.small, queues.medium, queues.large);
       if (us.contains(queued, socket.id)) {
         socket.get('gameSize', function(err, gameSize) {
@@ -129,8 +135,10 @@ module.exports = function(io) {
       setInterval(function() {
           socket.get('timer', function(err, timer) {
             timer++;
+            console.log("this" + timer);
             socket.set('timer', timer);
             socket.get('roomID', function(err, roomID) {
+              console.log("this" + roomID);
               socket.broadcast.to(roomID).emit('timer', { timer: timer });
             });
           });
