@@ -42,7 +42,8 @@ BoardManager.prototype.initializeBoard = function() {
 BoardManager.prototype.clipIndexes = function() {
   var indexes = [];
   var low = this.clipHeight;
-  var high = this.arraySideLength + this.clipHeight - 1;
+  // TODO fix high point formula
+  var high = this.arraySideLength + this.clipHeight + 1;
 
   console.log("low: " + low + ", high: " + high);
 
@@ -50,7 +51,7 @@ BoardManager.prototype.clipIndexes = function() {
     for (var j = 0; j < this.arraySideLength; j++) {
       var addSize = i + j;
       if ( (addSize <= low) || (addSize >= high) ) {
-        indexes.push( [i, j] );
+        indexes.push( {x: i, y: j} );
       }
     }
   }
@@ -93,7 +94,7 @@ BoardManager.prototype.drawBoard = function() {
   var centerX = width / 2;
   var centerY = height / 2;
 
-  var rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight + 1));
+  var rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight + 4));
 
   var splitWidth = width / this.arraySideLength;
   var splitHeight = height / rows;
@@ -101,10 +102,11 @@ BoardManager.prototype.drawBoard = function() {
   console.log("splitWidth: " + splitWidth + ", splitHeight: " + splitHeight);
 
   // Use smaller dimension as basic unit
+  // TODO offset of hexagon
   var gridunit = (splitHeight >= splitWidth) ? splitWidth : splitHeight;
   var halfunit = gridunit / 2;
 
-  var hexRadius = gridunit / 2;
+  var hexRadius = gridunit / 3;
 
   var clipIndexes = this.clipIndexes();
   console.log(clipIndexes);
@@ -112,36 +114,36 @@ BoardManager.prototype.drawBoard = function() {
   var startX = centerX - (gridunit * ((this.arraySideLength - 1) / 2));
   var startY = centerY;
 
-  var indexX = this.arraySideLength - 1;
-  var indexY = 0;
+  var topIndex = this.arraySideLength - 1;
   var rowWidth = this.arraySideLength;
 
-  while (indexY < rowWidth) {
-    this.board[indexX][indexY] = this.drawHexagonAtPoint(startX, startY, hexRadius);
-    console.log("board[" + indexX + "][" + indexY + "] = (" + startX + ", " + startY + ")" );
-    console.log("radius: " + hexRadius);
-    startX += gridunit;
-    indexX -= 1;
-    indexY += 1;
-  };
-
-  // for (indexX; indexX >= 0; indexX--) {
-  //   var tempX = startX;
-  //   var tempY = startY;
-
-  //   for (indexY; indexY < this.arraySideLength; indexY++) {
-
-  //     if (!_.contains(clipIndexes, [indexX, indexY])) {
-  //       this.board[indexX][indexY] = this.drawHexagonAtPoint(startX, startY, hexRadius);
-  //     }
-  //     tempX += gridunit;
-  //     tempY += gridunit;
-
-  //   };
-
-  //   startX -= gridunit;
-  //   startY += gridunit;
+  // while (indexY < rowWidth) {
+  //   this.board[indexX][indexY] = this.drawHexagonAtPoint(startX, startY, hexRadius);
+  //   console.log("board[" + indexX + "][" + indexY + "] = (" + startX + ", " + startY + ")" );
+  //   console.log("radius: " + hexRadius);
+  //   startX += gridunit;
+  //   indexX -= 1;
+  //   indexY += 1;
   // };
+
+  for (var indexX = topIndex; indexX >= 0; indexX--) {
+    var tempX = startX;
+    var tempY = startY;
+
+    for (var indexY = 0; indexY <= topIndex; indexY++) {
+      var coordinate = {x: indexX, y: indexY};
+      if ( !clipIndexes.contains(coordinate) ) {
+        this.board[indexX][indexY] = this.drawHexagonAtPoint(tempX, tempY, hexRadius);
+        console.log("board[" + indexX + "][" + indexY + "] = (" + tempX + ", " + tempY + ")" );
+      }
+      tempX += halfunit;
+      tempY += halfunit;
+      //console.log("startX: " + startX + ", tempX: " + tempX);
+    }
+
+    startX += halfunit;
+    startY -= halfunit;
+  }
 }
 
 
@@ -154,7 +156,7 @@ $(document).ready(function(){
   //   strokeWidth: 3
   // });
 
-  var boardManager = new BoardManager(s, 5, 2);
+  var boardManager = new BoardManager(s, 9, 2);
   //boardManager.drawHexagonAtPoint(20, 20, 20);
   boardManager.drawBoard();
 
