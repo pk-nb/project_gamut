@@ -43,7 +43,6 @@ queues.on('connectTwo', function(io, userGameSize) {
   });
 });
 
-
 // Validate client form, expecting array of objects with value fields
 // [ { ..., 'value' : userName }, {..., 'value': gameSize} ]
 function formValid(gameData, socket) {
@@ -72,7 +71,6 @@ function sendError(socket, errorMessage) {
   socket.emit('error', errorMessage);
 }
 
-
 module.exports = function(io) {
   io.sockets.on('connection', function (socket) {
 
@@ -81,12 +79,14 @@ module.exports = function(io) {
       if (formValid(gameData, socket)) {
         var userName = gameData[0].value;
         var userGameSize = gameData[1].value;
+        var timer = 0; 
 
         data.users.push(userName);
         // Store both vars then run call back pushing socket onto queue
         async.parallel([
           function(callback) { socket.set('userName', userName, callback); },
-          function(callback) { socket.set('gameSize', userGameSize, callback); }
+          function(callback) { socket.set('gameSize', userGameSize, callback); },
+          function(callback) { socket.set('timer', timer, callback); }
         ],
         function() {
           queues.pushSocket(io, socket);
@@ -122,6 +122,19 @@ module.exports = function(io) {
       socket.get('roomID', function(err, roomID) {
         io.sockets.in(roomID).emit(message.name, message.message);
       });
+    });
+
+    // Starts timer when both users join a room
+    socket.on('timer', function(message) {
+      setInterval(function() {
+          socket.get('timer', function(err, timer) {
+            timer++;
+            socket.set('timer', timer);
+            socket.get('roomID', function(err, roomID) {
+              socket.broadcast.to(roomID).emit('timer', { timer: timer });
+            });
+          });
+      }, 1000);
     });
 
   }); // END .on(connection)

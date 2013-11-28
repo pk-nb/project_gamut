@@ -27,6 +27,11 @@ function printChat(string) {
   $('#chatEntries').append("<p>" + string + "</p>");
 }
 
+// timer test
+socket.on('timer', function (data) {
+    $('#counter').html(data.timer);
+});
+
 /* View Binding
  *************************************/
 $(function() {

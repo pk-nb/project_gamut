@@ -35,6 +35,8 @@ function emitGameMessage(name, message) {
   }
 }
 
+
+
 socket.on('poke', function(data) {
   printFeedback(data);
 });
@@ -44,8 +46,10 @@ socket.on('chatMessage', function(data) {
 });
 
 
+
 // GETTING message Display message on client-recieve
 socket.on('gameStart', function(data) {
+  socket.emit('timer', data); // start timer
   console.log(data);
   printFeedback(data.self + " VS " + data.opponent);
   currentRoom = data.room; // Save the room so we know who to talk to
