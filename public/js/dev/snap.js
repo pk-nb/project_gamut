@@ -19,6 +19,8 @@ function BoardManager(paper, numWidth, clipHeight) {
   */
   this.arraySideLength = numWidth;
   this.clipHeight = clipHeight;
+  this.rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight));
+
 
   // Initialize Board
   this.board = [];
@@ -41,9 +43,10 @@ BoardManager.prototype.initializeBoard = function() {
 // Returns array of {x,y} objects to clip and not draw
 BoardManager.prototype.clipIndexes = function() {
   var indexes = [];
-  var low = this.clipHeight;
+  var low = this.clipHeight - 1;
   // TODO fix high point formula
-  var high = this.arraySideLength + this.clipHeight + 1;
+  var high = ((2 * this.arraySideLength) - 1) - (this.clipHeight);
+
 
   console.log("low: " + low + ", high: " + high);
 
@@ -94,10 +97,11 @@ BoardManager.prototype.drawBoard = function() {
   var centerX = width / 2;
   var centerY = height / 2;
 
-  var rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight + 4));
+  var rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight));
+
 
   var splitWidth = width / this.arraySideLength;
-  var splitHeight = height / rows;
+  var splitHeight = height / this.rows;
 
   console.log("splitWidth: " + splitWidth + ", splitHeight: " + splitHeight);
 
@@ -116,15 +120,6 @@ BoardManager.prototype.drawBoard = function() {
 
   var topIndex = this.arraySideLength - 1;
   var rowWidth = this.arraySideLength;
-
-  // while (indexY < rowWidth) {
-  //   this.board[indexX][indexY] = this.drawHexagonAtPoint(startX, startY, hexRadius);
-  //   console.log("board[" + indexX + "][" + indexY + "] = (" + startX + ", " + startY + ")" );
-  //   console.log("radius: " + hexRadius);
-  //   startX += gridunit;
-  //   indexX -= 1;
-  //   indexY += 1;
-  // };
 
   for (var indexX = topIndex; indexX >= 0; indexX--) {
     var tempX = startX;
@@ -156,7 +151,7 @@ $(document).ready(function(){
   //   strokeWidth: 3
   // });
 
-  var boardManager = new BoardManager(s, 9, 2);
+  var boardManager = new BoardManager(s, 12, 4);
   //boardManager.drawHexagonAtPoint(20, 20, 20);
   boardManager.drawBoard();
 
