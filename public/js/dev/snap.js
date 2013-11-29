@@ -19,7 +19,7 @@ function BoardManager(paper, numWidth, clipHeight) {
   */
   this.arraySideLength = numWidth;
   this.clipHeight = clipHeight;
-  this.rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight));
+  //this.rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight));
 
 
   // Initialize Board
@@ -44,11 +44,9 @@ BoardManager.prototype.initializeBoard = function() {
 BoardManager.prototype.clipIndexes = function() {
   var indexes = [];
   var low = this.clipHeight - 1;
-  // TODO fix high point formula
   var high = ((2 * this.arraySideLength) - 1) - (this.clipHeight);
 
-
-  console.log("low: " + low + ", high: " + high);
+  // console.log("low: " + low + ", high: " + high);
 
   for (var i = 0; i < this.arraySideLength; i++) {
     for (var j = 0; j < this.arraySideLength; j++) {
@@ -99,21 +97,25 @@ BoardManager.prototype.drawBoard = function() {
 
   var rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight));
 
-
   var splitWidth = width / this.arraySideLength;
-  var splitHeight = height / this.rows;
+  var splitHeight = height / rows;
 
   console.log("splitWidth: " + splitWidth + ", splitHeight: " + splitHeight);
 
   // Use smaller dimension as basic unit
-  // TODO offset of hexagon
   var gridunit = (splitHeight >= splitWidth) ? splitWidth : splitHeight;
   var halfunit = gridunit / 2;
 
-  var hexRadius = gridunit / 3;
+  var hexRadius = halfunit;
+  var hexHeight = 2 * hexRadius;
+  var hexWidth = 2 * Math.sqrt(( Math.pow(hexRadius, 2) - Math.pow((hexRadius/2), 2) ));
+  var hexWidthToHeightRatio = hexWidth / hexHeight;
+
+  console.log("hexHeight: " + hexHeight + ", hexWidth: " + hexWidth + ", Ratio: " + hexWidthToHeightRatio);
+
 
   var clipIndexes = this.clipIndexes();
-  console.log(clipIndexes);
+
   // Initialize point
   var startX = centerX - (gridunit * ((this.arraySideLength - 1) / 2));
   var startY = centerY;
@@ -129,16 +131,18 @@ BoardManager.prototype.drawBoard = function() {
       var coordinate = {x: indexX, y: indexY};
       if ( !clipIndexes.contains(coordinate) ) {
         this.board[indexX][indexY] = this.drawHexagonAtPoint(tempX, tempY, hexRadius);
-        console.log("board[" + indexX + "][" + indexY + "] = (" + tempX + ", " + tempY + ")" );
+        //console.log("board[" + indexX + "][" + indexY + "] = (" + tempX + ", " + tempY + ")" );
       }
       tempX += halfunit;
-      tempY += halfunit;
+      tempY += gridunit * hexWidthToHeightRatio;
       //console.log("startX: " + startX + ", tempX: " + tempX);
     }
 
     startX += halfunit;
-    startY -= halfunit;
+    startY -= gridunit * hexWidthToHeightRatio;
   }
+
+   console.log(this.board);
 }
 
 
@@ -151,7 +155,7 @@ $(document).ready(function(){
   //   strokeWidth: 3
   // });
 
-  var boardManager = new BoardManager(s, 12, 4);
+  var boardManager = new BoardManager(s, 10, 5);
   //boardManager.drawHexagonAtPoint(20, 20, 20);
   boardManager.drawBoard();
 
