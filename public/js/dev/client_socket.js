@@ -1,6 +1,10 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
 
+// update both client's timer
+function sentTimer() {
+  emitGameMessage('timerUpdate', timer );
+}
 
 function sentMessage() {
    if ($('#chatInput').val() != "") 
@@ -35,7 +39,9 @@ function emitGameMessage(name, message) {
   }
 }
 
-
+socket.on('timerUpdate', function(data) {
+  printTimer(data);
+});
 
 socket.on('poke', function(data) {
   printFeedback(data);
@@ -46,12 +52,19 @@ socket.on('chatMessage', function(data) {
 });
 
 
-
 // GETTING message Display message on client-recieve
 socket.on('gameStart', function(data) {
-  socket.emit('timer', data); // start timer
   console.log(data);
   printFeedback(data.self + " VS " + data.opponent);
   currentRoom = data.room; // Save the room so we know who to talk to
   pubsub.publish('gameStart');
+  gameOn = true; // when game start set to true, timer starts
+});
+
+// timer test
+socket.on('timer', function (data) {
+  if (gameOn) {
+    timer++;
+    sentTimer();
+  }
 });

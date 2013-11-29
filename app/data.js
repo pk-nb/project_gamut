@@ -14,3 +14,5 @@ exports.types = {
       large  : { id : 'large',  size : 50, description : "Large Board (50x50)" }
   }
 }
+
+exports.timer = 0.5;

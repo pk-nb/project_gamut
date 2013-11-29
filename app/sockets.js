@@ -79,14 +79,12 @@ module.exports = function(io) {
       if (formValid(gameData, socket)) {
         var userName = gameData[0].value;
         var userGameSize = gameData[1].value;
-        var timer = 0; 
 
         data.users.push(userName);
         // Store both vars then run call back pushing socket onto queue
         async.parallel([
           function(callback) { socket.set('userName', userName, callback); },
-          function(callback) { socket.set('gameSize', userGameSize, callback); },
-          function(callback) { socket.set('timer', timer, callback); }
+          function(callback) { socket.set('gameSize', userGameSize, callback); }
         ],
         function() {
           queues.pushSocket(io, socket);
@@ -99,12 +97,6 @@ module.exports = function(io) {
       // Clear username
       socket.get('userName', function(err, userName) {
         data.users = us.without(data.users, userName);
-      });
-
-      // Clear timer
-      socket.get('timer', function(err, timer) {
-        timer = 0;
-        socket.set('timer', timer);
       });
 
       var queued = us.union(queues.small, queues.medium, queues.large);
@@ -130,20 +122,12 @@ module.exports = function(io) {
       });
     });
 
-    // Starts timer when both users join a room
-    socket.on('timer', function(message) {
+    // Timer logic
       setInterval(function() {
-          socket.get('timer', function(err, timer) {
-            timer++;
-            console.log("this" + timer);
-            socket.set('timer', timer);
-            socket.get('roomID', function(err, roomID) {
-              console.log("this" + roomID);
-              socket.broadcast.to(roomID).emit('timer', { timer: timer });
-            });
-          });
-      }, 1000);
-    });
+        data.timer;
+        console.log("this" + data.timer);
+        socket.emit('timer', { timer: data.timer });
+      }, 500); 
 
   }); // END .on(connection)
 } // END module.exports
