@@ -1,9 +1,8 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
 
-
 function sentMessage() {
-   if ($('#chatInput').val() != "") 
+   if ($('#chatInput').val() != "")
    {
       emitGameMessage('chatMessage', userName + ': ' +  $('#chatInput').val() );
       $('#chatInput').val('');

@@ -10,6 +10,10 @@ var userName    = "";
 
 var clockIntervalID = 0;
 
+var hexIdToIndex = {};
+//var hexIndexToId = {};
+
+
 /**
  * Array.prototype.[method name] allows you to define/overwrite an objects method
  * needle is the item you are searching for
