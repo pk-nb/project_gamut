@@ -21,7 +21,7 @@ function BoardManager(paper, numWidth, clipHeight) {
 
 
   // Initialize Board
-  this.board = [];
+  ///this.board = [];
   this.hexGroup = this.paper.g();
 
 
@@ -82,7 +82,7 @@ BoardManager.prototype.adjacentIndexes = function(x, y) {
 
 // Public
 BoardManager.prototype.initializeBoard = function() {
-
+  this.board = [];
   // Set Array of board
   for(var i = 0; i < this.arraySideLength; i++) {
     this.board.push([]);
@@ -143,6 +143,8 @@ BoardManager.prototype.initializeBoard = function() {
         var hex = this.drawHexagonAtPoint(tempX, tempY, this.hexRadius);
         hex.data("i", indexX);
         hex.data("j", indexY);
+        hex.data("cx", tempX);
+        hex.data("cy", tempY);
         this.board[indexX][indexY] = hex;
         hexIdToIndex[hex.id] = index;
         this.hexGroup.add(hex);
@@ -204,6 +206,8 @@ BoardManager.prototype.drawPiece = function(coordinate, row, column, pieceString
         hex.attr({ fill: "#fa475c" }, 1000);
         hex.data("i", i);
         hex.data("j", j);
+        hex.data("cx", tempX);
+        hex.data("cy", tempY);
         pieceGroup.add(hex);
 
         //console.log("tempX: " + tempX + ", tempY: " + tempY);
@@ -218,32 +222,52 @@ BoardManager.prototype.drawPiece = function(coordinate, row, column, pieceString
   }
 
   pieceGroup.animate({opacity: 1}, 1000);
+  pieceGroup.data("originalCX", pieceGroup.getBBox().cx);
+  pieceGroup.data("originalCY", pieceGroup.getBBox().cy);
   return pieceGroup;
 }
 
 BoardManager.prototype.hexagonAtPoint = function(x, y) {
-  // for (var i = 0; i < this.board.length; i++) {
-  //   for (var j = 0; j < this.board[i].length; j++) {
-  //     if (!_.isEmpty(this.board[i][j])) {
-  //       if (Snap.path.isPointInside(this.board[i][j].innerSVG(), x, y)) {
-  //         return {i: i, j: j};
-  //       }
-  //     }
-  //   }
-  // }
   var boardHexs = this.hexGroup.selectAll("*");
 
   var returnEl = null;
   boardHexs.forEach(function(el) {
     var pointInside = Snap.path.isPointInsideBBox(el.getBBox(), x, y);
     if (pointInside) {
-      //return {i: i, j: j};
       returnEl = el;
     }
   });
 
   return returnEl;
 }
+
+BoardManager.prototype.validPiecePlay = function(piece, i, j) {
+  var boardManager = this;
+  var coordinates = [];
+  var valid = true;
+  var hexes = piece.selectAll("*");
+
+  for (var k = 0; k < hexes.length; k++) {
+    var tempI = hexes[k].data("i") + i;
+    var tempJ = hexes[k].data("j") + j - 1;
+
+    var maxIndex = boardManager.board.length;
+
+    if ( (tempI >= maxIndex) || (tempJ >= maxIndex) ) {
+      valid = false;
+      return false;
+    }
+    if ( _.isEmpty(boardManager.board[tempI][tempJ]) ) {
+      valid = false;
+      return false;
+    }
+
+    coordinates.push({i: tempI, j: tempJ});
+  }
+
+  return coordinates;
+}
+
 
 
 $(document).ready(function(){
@@ -274,18 +298,38 @@ $(document).ready(function(){
   //   }
   // );
 
-  eve.on('snap.drag.over.' + piece1.id)
+  // eve.on('snap.drag.over.' + piece1.id)
+
+
 
   eve.on('snap.drag.end.' + piece1.id, function() {
     //console.log(piece1.selectAll("*"));
-    var hexBox = this.select("*").getBBox();
-    var pointx = hexBox.cx + this.getBBox().cx;
-    var pointy = hexBox.cy + this.getBBox().cy;
+    var hex = this.select("*");
+    //hex.animate({fill: "#000"}, 500);
 
-    console.log(pointx, pointy);
-    console.log(boardManager.hexagonAtPoint(pointx, pointy));
+    //console.log(this.getBBox());
+    var groupHexOffsetX = this.data("originalCX") - hex.data("cx");
+    var groupHexOffsetY = this.data("originalCY") - hex.data("cy");
 
+    var pointx = this.getBBox().cx - groupHexOffsetX;
+    var pointy = this.getBBox().cy - groupHexOffsetY;
 
+    //console.log(pointx, pointy);
+    var overlapHex = boardManager.hexagonAtPoint(pointx, pointy);
+    //console.log(overlapHex)
+    if (!_.isNull(overlapHex)) {
+      //overlapHex.animate({fill: "#bada55"}, 500);
+
+      var pieceCoordinates = boardManager.validPiecePlay(this, overlapHex.data("i"), overlapHex.data("j"));
+
+      //console.log(pieceCoordinates);
+      if ( pieceCoordinates ) {
+        // Publish coordinates played to game logic
+        _.map(pieceCoordinates, function(c) {
+          boardManager.board[c.i][c.j].animate({fill: "#bada55"}, 500);
+        });
+      }
+    }
 
   });
 
