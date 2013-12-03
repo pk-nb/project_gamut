@@ -1,13 +1,14 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
 
+
 // update both client's timer
 function sentTimer() {
   emitGameMessage('timerUpdate', timer );
 }
 
 function sentMessage() {
-   if ($('#chatInput').val() != "") 
+   if ($('#chatInput').val() != "")
    {
       emitGameMessage('chatMessage', userName + ': ' +  $('#chatInput').val() );
       $('#chatInput').val('');

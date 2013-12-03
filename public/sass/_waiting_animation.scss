@@ -29,12 +29,12 @@
   }
 }
 
-.hex1 { @include hexagon(20px, 620px, 3.3s) }
-.hex2 { @include hexagon(800x, 900px, 2.4s) }
-.hex3 { @include hexagon(400px, 40px, 2.9s) }
-.hex4 { @include hexagon(200px, 700px, 1.5s) }
-.hex5 { @include hexagon(600px, 400px, 1.0s) }
-.hex6 { @include hexagon(80px, 80px, 2.0s) }
+// .hex1 { @include hexagon(20px, 620px, 3.3s) }
+// .hex2 { @include hexagon(800x, 900px, 2.4s) }
+// .hex3 { @include hexagon(400px, 40px, 2.9s) }
+// .hex4 { @include hexagon(200px, 700px, 1.5s) }
+// .hex5 { @include hexagon(600px, 400px, 1.0s) }
+// .hex6 { @include hexagon(80px, 80px, 2.0s) }
 
 #waitingMessage {
   position: absolute;

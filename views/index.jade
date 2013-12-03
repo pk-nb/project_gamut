@@ -2,12 +2,12 @@ extends layout
 
 block append js
   script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
+  //-script(src="js/snap.svg.js")
   script(src="/socket.io/socket.io.js")
   script(src="js/main.min.js")
 
 block content
   header
-    //-h1 Project Gamut
   #gameContainer
     #newGameDiv
       img(src='images/logo.svg', alt='logo for gamut').logo
@@ -23,6 +23,7 @@ block content
               option(value=size.id)= size.description
           br
           button#submit Search for Game
+
     div#waiting
       h2#waitingMessage Looking for another player
       .hex1
@@ -39,9 +40,10 @@ block content
       div#chatControls
         input(type='text')#chatInput
         button#chatSubmit Send
-        
+
     div#counter
 
     div#debug
-      button#sendPoke Poke
+      //-button#sendPoke Poke
+      svg#paper
 

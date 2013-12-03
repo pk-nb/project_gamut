@@ -105,8 +105,25 @@ select {
   top: 1px;
 }
 
+#waiting {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -999;
+}
+
 
 #debug {
-  min-width: 500px;
-  min-height: 200px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#paper {
+  width: 100%;
+  height: 100%;
+  //background-color: $secondary-color;
 }
