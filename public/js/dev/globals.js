@@ -4,6 +4,9 @@
 var socket = io.connect();
 var pubsub = Pubsub.create();
 
+// Presenter object with hexagon board storage
+var BoardManager;
+
 // Global app parameters
 var currentRoom = null;
 var userName    = "";
