@@ -141,7 +141,8 @@ BoardManager.prototype.initializeBoard = function() {
       // If not a clipped off hex, draw and store reference on board and lookup table
       if ( !clipIndexes.contains(index) ) {
         var hex = this.drawHexagonAtPoint(tempX, tempY, this.hexRadius);
-        //hex.data("index", index);
+        hex.data("i", indexX);
+        hex.data("j", indexY);
         this.board[indexX][indexY] = hex;
         hexIdToIndex[hex.id] = index;
         this.hexGroup.add(hex);
@@ -201,6 +202,8 @@ BoardManager.prototype.drawPiece = function(coordinate, row, column, pieceString
       if (pieceString[i].charAt(j) === '*') {
         var hex = this.drawHexagonAtPoint(tempX, tempY, this.hexRadius);
         hex.attr({ fill: "#fa475c" }, 1000);
+        hex.data("i", i);
+        hex.data("j", j);
         pieceGroup.add(hex);
 
         //console.log("tempX: " + tempX + ", tempY: " + tempY);
@@ -218,6 +221,30 @@ BoardManager.prototype.drawPiece = function(coordinate, row, column, pieceString
   return pieceGroup;
 }
 
+BoardManager.prototype.hexagonAtPoint = function(x, y) {
+  // for (var i = 0; i < this.board.length; i++) {
+  //   for (var j = 0; j < this.board[i].length; j++) {
+  //     if (!_.isEmpty(this.board[i][j])) {
+  //       if (Snap.path.isPointInside(this.board[i][j].innerSVG(), x, y)) {
+  //         return {i: i, j: j};
+  //       }
+  //     }
+  //   }
+  // }
+  var boardHexs = this.hexGroup.selectAll("*");
+
+  var returnEl = null;
+  boardHexs.forEach(function(el) {
+    var pointInside = Snap.path.isPointInsideBBox(el.getBBox(), x, y);
+    if (pointInside) {
+      //return {i: i, j: j};
+      returnEl = el;
+    }
+  });
+
+  return returnEl;
+}
+
 
 $(document).ready(function(){
   var s = Snap("#paper");
@@ -233,37 +260,44 @@ $(document).ready(function(){
                                     "-*-" ]  ).drag();
 
 
-  var moveFunc = function (dx, dy, posx, posy) {
-    this.attr( { cx: posx , cy: posy } ); // basic drag, you would want to adjust to take care of where you grab etc.
-    console.log(this);
-  };
+  // var moveFunc = function (dx, dy, posx, posy) {
+  //   this.attr( { cx: posx , cy: posy } ); // basic drag, you would want to adjust to take care of where you grab etc.
+  //   console.log(this);
+  // };
 
-  piece1.drag(moveFunc,
-    function() {
-      console.log("Move started");
-    },
-    function() {
-      console.log(this.getBBox());
-    }
-  );
+  // piece1.drag(moveFunc,
+  //   function() {
+  //     console.log("Move started");
+  //   },
+  //   function() {
+  //     console.log(this.getBBox());
+  //   }
+  // );
 
-  // eve.on('snap.drag.over.' + piece1.id)
+  eve.on('snap.drag.over.' + piece1.id)
 
-  // eve.on('snap.drag.end.' + piece1.id, function() {
-  //   //piece1._bboxwt = undefined; // HACK to update BBox
-  //   console.log(piece1.getBBox());
-  //   //piece1._bboxwt = undefined; // HACK to update BBox
-  // });
+  eve.on('snap.drag.end.' + piece1.id, function() {
+    //console.log(piece1.selectAll("*"));
+    var hexBox = this.select("*").getBBox();
+    var pointx = hexBox.cx + this.getBBox().cx;
+    var pointy = hexBox.cy + this.getBBox().cy;
+
+    console.log(pointx, pointy);
+    console.log(boardManager.hexagonAtPoint(pointx, pointy));
 
 
-  var hex = boardManager.drawHexagonAtPoint(20, 20, 20);
-  hex.drag();
 
-  eve.on('snap.drag.end.' + hex.id, function() {
-    //piece1._bboxwt = undefined; // HACK to update BBox
-    console.log(this.getBBox());
-    //this._bboxwt = undefined; // HACK to update BBox
   });
+
+
+  // var hex = boardManager.drawHexagonAtPoint(20, 20, 20);
+  // hex.drag();
+
+  // eve.on('snap.drag.end.' + hex.id, function() {
+  //   //piece1._bboxwt = undefined; // HACK to update BBox
+  //   console.log(this.getBBox());
+  //   //this._bboxwt = undefined; // HACK to update BBox
+  // });
 
 
   boardManager.drawPiece( {x: -1, y: -1}, 2, 2, ["**", "**"]).drag();
