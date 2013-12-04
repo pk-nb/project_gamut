@@ -90,7 +90,6 @@ module.exports = function(io) {
             boardArray[row][column] = false;
           };
         };
-        console.log(boardArray[10][12]);
         // Store both vars then run call back pushing socket onto queue
         async.parallel([
           function(callback) { socket.set('userName', userName, callback); },
@@ -104,7 +103,7 @@ module.exports = function(io) {
     }); // END startGame
 
     // Server stores which pieces have been placed and notifies clients
-    socket.on('piecePlayed', function(coordinates){
+    socket.on('piecePlayedhhh', function(coordinates){
       // get boardArray from socket
       socket.get('boardArray', function(err, boardArray) {
         var positionPlayed = false; // flag
@@ -116,12 +115,15 @@ module.exports = function(io) {
         if (positionPlayed == false) { 
         // it's OK to play
           for (var a = 0; a < coordinates.length; a++) {
-            boardArray[coordinates[a].i][coordinates[a].j] == true;
-            socket.set('boardArray', boardArray); 
-            /* TO DO
-             - Store in both sockets
-             - Clients in a room (check Rooms library)
-             */
+            boardArray[coordinates[a].i][coordinates[a].j] == true; // set pieces to true
+            socket.get('roomID', function(err, roomID) {
+              var roster = io.sockets.clients(roomID); // get clients in the room
+              //console.log(roster);
+              for(id in roster) {
+                var _socket = roster[id];
+                _socket.set('boardArray', boardArray); // save boardArray in all the clients' sockets 
+              };
+            });
           };
           /* TO DO
             - Test that it is emitting only to sender
