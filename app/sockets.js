@@ -81,16 +81,64 @@ module.exports = function(io) {
         var userGameSize = gameData[1].value;
 
         data.users.push(userName);
+
+        // Initialize board array data
+        var boardArray = [];
+        for (var row = 0; row < data.types.sizes[userGameSize].arrayLength; row++) {
+          boardArray[row] = [];
+          for (var column = 0; column < data.types.sizes[userGameSize].arrayLength; column++) {
+            boardArray[row][column] = false;
+          };
+        };
+        console.log(boardArray[10][12]);
         // Store both vars then run call back pushing socket onto queue
         async.parallel([
           function(callback) { socket.set('userName', userName, callback); },
-          function(callback) { socket.set('gameSize', userGameSize, callback); }
+          function(callback) { socket.set('gameSize', userGameSize, callback); },
+          function(callback) { socket.set('boardArray', boardArray, callback); }
         ],
         function() {
           queues.pushSocket(io, socket);
         });
       }
     }); // END startGame
+
+    // Server stores which pieces have been placed and notifies clients
+    socket.on('piecePlayed', function(coordinates){
+      // get boardArray from socket
+      socket.get('boardArray', function(err, boardArray) {
+        var positionPlayed = false; // flag
+        for (var a = 0; a < coordinates.length && positionPlayed == false; a++) {
+          if (boardArray[coordinates[a].i][coordinates[a].j] == true)
+            positionPlayed = true; // if coordinate has been played, end loop and flag is true
+        };
+
+        if (positionPlayed == false) { 
+        // it's OK to play
+          for (var a = 0; a < coordinates.length; a++) {
+            boardArray[coordinates[a].i][coordinates[a].j] == true;
+            socket.set('boardArray', boardArray); 
+            /* TO DO
+             - Store in both sockets
+             - Clients in a room (check Rooms library)
+             */
+          };
+          /* TO DO
+            - Test that it is emitting only to sender
+            */
+          // emit message to (only) player that it's OK to play piece
+          io.sockets.socket(socket.id).emit("updateBoard", coordinates);
+          // emit message to (only) enemy of what piece was played
+          socket.get('roomID', function(err, roomID) {
+              io.sockets.in(roomID).emit("updateBoard", coordinates);
+          });
+        }
+        else{ // positionPlayed == true
+        // emit message to player that it is NOT OK to play piece
+          io.sockets.socket(socket.id).emit("posPlayed", coordinates);
+        }
+      });
+    });
 
     // Disconnect Logic (drop username, drop if in queue, optional gamesave logic)
     socket.on('disconnect', function() {
