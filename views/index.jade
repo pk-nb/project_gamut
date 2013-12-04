@@ -8,7 +8,7 @@ block append js
 
 block content
   header
-  #gameContainer
+  #formContainer
     #newGameDiv
       img(src='images/logo.svg', alt='logo for gamut').logo
       h1.logotext Gamut
@@ -41,9 +41,11 @@ block content
         input(type='text')#chatInput
         button#chatSubmit Send
 
-    div#counter
+    //-div#counter
 
     div#debug
       //-button#sendPoke Poke
-      svg#paper
 
+  div#game
+    div#banner
+    svg#paper

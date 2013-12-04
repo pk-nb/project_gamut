@@ -12,10 +12,10 @@ pubsub.subscribe('newGameRequested', function() {
 });
 
 pubsub.subscribe('gameStart', function() {
-  $('#waitingMessage').fadeOut(300);
-  $('#debug').fadeIn(600);
-  $('#debug').fadeIn(600);
-  $('#chat').fadeIn(600);
+  $('#waiting').fadeOut(300);
+  $('#game').fadeIn(600);
+  //$('#debug').fadeIn(600);
+  //$('#chat').fadeIn(600);
 });
 
 // Debug log
@@ -41,10 +41,11 @@ jQuery( document ).ready(function( $ ) {
   $('#chat').hide();
   $("#sendPoke").click(function() { sendPoke() });
   $('h2#waitingMessage').hide();
+  $('#game').hide();
 
   // Debug stuff
-  //$('#debug').hide();
-  $('#newGameDiv').hide();
+  $('#debug').hide();
+  //$('#newGameDiv').hide();
 
 
   $('#newGameForm').on('submit', function(e) {

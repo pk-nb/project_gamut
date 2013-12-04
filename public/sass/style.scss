@@ -65,7 +65,7 @@ select {
   margin-bottom: 8px;
 }
 
-#gameContainer {
+#formContainer {
   color: $offwhite-color;
   position: absolute;
   top: 0;
@@ -73,13 +73,14 @@ select {
   right: 0;
   bottom: 0;
   text-align: center;
-  background-color: $primary-color;
+  //background-color: $primary-color;
 }
 
 #newGameDiv {
   display: inline-block;
   text-align: left;
   margin-top: 3em;
+  z-index: 100;
 }
 
 #submit {
@@ -109,21 +110,34 @@ select {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
-  z-index: -999;
+  z-index: -1;
 }
 
+// #debug {
+//   width: 100%;
+//   height: 100%;
+// }
 
-#debug {
-  width: 100%;
+$banner-height: 2em;
+
+#game {
+  position: relative;
   height: 100%;
-  overflow: hidden;
+  width: 100%;
+}
+
+#banner {
+  height: $banner-height;
 }
 
 #paper {
-  width: 100%;
-  height: 100%;
-  //background-color: $secondary-color;
+  //margin-top: $banner-height;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: $secondary-color;
 }

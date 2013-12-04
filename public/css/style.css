@@ -200,7 +200,6 @@ table {
   animation-delay: 2s; }
 
 #waitingMessage {
-  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -402,20 +401,20 @@ select {
   width: 100%;
   margin-bottom: 8px; }
 
-#gameContainer {
+#formContainer {
   color: #eeeeee;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  text-align: center;
-  background-color: #3acccc; }
+  text-align: center; }
 
 #newGameDiv {
   display: inline-block;
   text-align: left;
-  margin-top: 3em; }
+  margin-top: 3em;
+  z-index: 100; }
 
 #submit {
   border: 0;
@@ -443,16 +442,22 @@ select {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   overflow: hidden;
-  z-index: -999; }
+  z-index: -1; }
 
-#debug {
-  width: 100%;
+#game {
+  position: relative;
   height: 100%;
-  overflow: hidden; }
+  width: 100%; }
+
+#banner {
+  height: 2em; }
 
 #paper {
-  width: 100%;
-  height: 100%; }
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #ffc749; }
