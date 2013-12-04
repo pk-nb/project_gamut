@@ -103,7 +103,7 @@ module.exports = function(io) {
     }); // END startGame
 
     // Server stores which pieces have been placed and notifies clients
-    socket.on('piecePlayedhhh', function(coordinates){
+    socket.on('piecePlayed', function(coordinates){
       // get boardArray from socket
       socket.get('boardArray', function(err, boardArray) {
         var positionPlayed = false; // flag
