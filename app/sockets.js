@@ -123,11 +123,10 @@ module.exports = function(io) {
     });
 
     // Timer logic
-      setInterval(function() {
-        data.timer;
-        console.log("this" + data.timer);
-        socket.emit('timer', { timer: data.timer });
-      }, 500); 
+    setInterval(function() {
+      data.timer;
+      socket.emit('timer', { timer: data.timer });
+    }, 500);
 
   }); // END .on(connection)
 } // END module.exports

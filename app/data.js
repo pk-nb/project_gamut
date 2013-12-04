@@ -9,9 +9,9 @@ exports.Queues = function() {
 
 exports.types = {
     sizes : {
-      small  : { id : 'small',  size : 20, description : "Small Board (20x20)" },
-      medium : { id : 'medium', size : 30, description : "Medium Board (30x30)" },
-      large  : { id : 'large',  size : 50, description : "Large Board (50x50)" }
+      small  : { id : 'small',  arrayLength : 19, clipHeight: 9,  description : "10 Hexagon" },
+      medium : { id : 'medium', arrayLength : 23, clipHeight: 11, description : "12 Hexagon" },
+      large  : { id : 'large',  arrayLength : 27, clipHeight: 13, description : "14 Hexagon" }
   }
 }
 
