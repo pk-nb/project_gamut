@@ -13,7 +13,8 @@ pubsub.subscribe('newGameRequested', function() {
 
 pubsub.subscribe('gameStart', function() {
   $('#waiting').fadeOut(300);
-  $('#game').fadeIn(600);
+  $('#game').show();
+  pubsub.publish('drawBoard');
   //$('#debug').fadeIn(600);
   //$('#chat').fadeIn(600);
 });

@@ -83,8 +83,8 @@ BoardManager.prototype.initializeBoard = function() {
     }
   }
 
-  this.width  = $("#paper").innerWidth();
-  this.height = $("#paper").innerHeight();
+  this.width  = $("#paper").width();
+  this.height = $("#svgContainer").height();
 
   // Center coordinate
   var centerX = this.width / 2;
@@ -299,7 +299,7 @@ function piecePlay() {
 
 
 // Initializes board on page load
-$(document).ready(function(){
+pubsub.subscribe('drawBoard', function() {
   var s = Snap("#paper");
 
   boardManager = new BoardManager(s, 27, 13);
