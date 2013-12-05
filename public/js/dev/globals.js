@@ -56,12 +56,12 @@ var boardPieces = [
   {
     type: pieceTypes.normal,
     cost: 3,
-    shape: ["*-", "**"]
+    shape: ["-*", "**"]
   },
   {
     type: pieceTypes.normal,
     cost: 3,
-    shape: ["**", "-*"]
+    shape: ["**", "*-"]
   },
   {
     type: pieceTypes.normal,

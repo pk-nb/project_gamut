@@ -197,6 +197,10 @@ BoardManager.prototype.drawPiece = function(coordinate, pieceArray) {
     pointY = (coordinate.y < 0) ? negy : posy;
   }
 
+  // Accomodate for hex width
+  pointX -= (this.hexRadius / 2);
+  pointY -= (this.hexRadius / 2);
+
   // Piece in group
   var pieceGroup = this.paper.g();
   pieceGroup.attr({ opacity: 0 });
@@ -313,9 +317,33 @@ BoardManager.prototype.drawPieces = function() {
     fill: "#31B4B4",
     opacity: 0
   });
-
   this.pieceBackground.animate({ opacity: 1 }, 1000);
 
+  // Get pieces loop
+  var splitWidth = this.width / boardPieces.length;
+  var height = this.height - this.boardHeight;
+
+
+  for (var i = 0; i < boardPieces.length; i++) {
+    var piece = this.drawPiece({}, boardPieces[i].shape);
+
+    var centerX = (splitWidth / 2) + (splitWidth * i);
+    var centerY = this.boardHeight + (height / 2);
+
+    console.log(piece.getBBox());
+    centerX -= (piece.getBBox().width / 2);
+    centerY -= (piece.getBBox().height / 2);
+    console.log("centerX: " + centerX + ", centerY: " + centerY);
+
+    piece.data("cost", boardPieces[i].cost);
+    piece.data("type", boardPieces[i].type);
+
+    //piece.transform("t100,100");
+    piece.transform( "t" + centerX + "," + centerY );
+    piece.drag();
+    eve.on('snap.drag.end.' + piece.id, piecePlay);
+
+  }
 }
 
 // Event hander for after drop. Calulates some hex in piece's coordinate and
@@ -364,23 +392,23 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
 
   // Create pieces
   // TODO: make a drawPieces function that layouts correctly
-  var piece1 = boardManager.drawPiece({}, ["-*-",
-                                           "***",
-                                           "-*-" ]  ).drag();
+  // var piece1 = boardManager.drawPiece({}, ["-*-",
+  //                                          "***",
+  //                                          "-*-" ]  ).drag();
 
-  var piece2 = boardManager.drawPiece( {x: -1, y: -1}, ["**", "**"]).drag();
+  // var piece2 = boardManager.drawPiece( {x: -1, y: -1}, ["**", "**"]).drag();
 
-  var piece3 = boardManager.drawPiece( {x: -1, y: 1}, ["---*",
-                                                       "--**",
-                                                       "****",
-                                                       "*---"]  ).drag();
+  // var piece3 = boardManager.drawPiece( {x: -1, y: 1}, ["---*",
+  //                                                      "--**",
+  //                                                      "****",
+  //                                                      "*---"]  ).drag();
 
-  var piece4 = boardManager.drawPiece( {x: 1, y: -1}, ["**"] ).drag();
+  // var piece4 = boardManager.drawPiece( {x: 1, y: -1}, ["**"] ).drag();
 
-  eve.on('snap.drag.end.' + piece1.id, piecePlay);
-  eve.on('snap.drag.end.' + piece2.id, piecePlay);
-  eve.on('snap.drag.end.' + piece3.id, piecePlay);
-  eve.on('snap.drag.end.' + piece4.id, piecePlay);
+  // eve.on('snap.drag.end.' + piece1.id, piecePlay);
+  // eve.on('snap.drag.end.' + piece2.id, piecePlay);
+  // eve.on('snap.drag.end.' + piece3.id, piecePlay);
+  // eve.on('snap.drag.end.' + piece4.id, piecePlay);
 
 });
 
