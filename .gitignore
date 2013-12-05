@@ -1,3 +1,7 @@
+# Grunt generated files
+/public/css/*.css
+main.min.js
+
 *.sourcemaps*
 
 lib-cov
