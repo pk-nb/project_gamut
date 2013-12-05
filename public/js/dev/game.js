@@ -4,9 +4,13 @@ var clock = function() {
   pubsub.publish('clock');
 }
 
-pubsub.subscribe('gameStart', function() {
+pubsub.subscribe('gameStart', function(context, data) {
   // Set clock and reference to stop
   clockIntervalID = window.setInterval(clock, 1000);
+  selfPlayerNumber = data.player;
+  opponentPlayerNumber = (selfPlayerNumber === 1) ? 2 : 1;
+  currentRoom = data.room;  // Save room, currently not being used
+  gameOn = true;            // When game start set to true, timer starts
 });
 
 pubsub.subscribe('validIndexPlay', function(context, indexes) {

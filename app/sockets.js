@@ -134,17 +134,20 @@ module.exports = function(io) {
           // Store updated array on both sockets
           socket.get('roomID', function(err, roomID) {
             var roster = io.sockets.clients(roomID); // get clients in the room
-            for(s in roster) {
-              io.sockets.socket(s.id).set('boardArray', boardArray); // save boardArray in all the clients' sockets
-            };
+            // Save boardArray on both sockets
+            async.parallel([
+              function(callback) { roster[0].set('boardArray', boardArray, callback); },
+              function(callback) { roster[1].set('boardArray', boardArray, callback); }
+            ], function() {
+              // Emit message to (only) player that it's OK to play piece
+              io.sockets.socket(socket.id).emit("selfUpdateBoard", coordinates);
+              // Emit message to (only) enemy of what piece was played
+              socket.get('roomID', function(err, roomID) {
+                socket.broadcast.to(roomID).emit("opponentUpdateBoard", coordinates);
+              });
+            });
           });
 
-          // Emit message to (only) player that it's OK to play piece
-          io.sockets.socket(socket.id).emit("selfUpdateBoard", coordinates);
-          // Emit message to (only) enemy of what piece was played
-          socket.get('roomID', function(err, roomID) {
-              socket.broadcast.to(roomID).emit("opponentUpdateBoard", coordinates);
-          });
         }
         else { // positionPlayed == true
           // Emit message to player that it is NOT OK to play piece

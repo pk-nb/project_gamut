@@ -57,13 +57,8 @@ socket.on('chatMessage', function(data) {
 
 // GETTING message Display message on client-recieve
 socket.on('gameStart', function(data) {
-  console.log(data);
-  // Save room, currently not being used
-  currentRoom = data.room;
   // Forward data to client events
   pubsub.publish("gameStart", null, data);
-  // When game start set to true, timer starts
-  gameOn = true;
 });
 
 // timer test
@@ -75,13 +70,13 @@ socket.on('timer', function (data) {
 });
 
 socket.on("selfUpdateBoard", function(indexes) {
-  console.log("Ok to play piece: ");
-  console.log(indexes);
+  // console.log("Ok to play piece: ");
+  pubsub.publish("selfUpdateBoard", null, indexes);
 });
 
 socket.on("opponentUpdateBoard", function(indexes) {
-  console.log("Opponent played piece: ");
-  console.log(indexes);
+  // console.log("Opponent played piece: ");
+  pubsub.publish("opponentUpdateBoard", null, indexes);
 });
 
 socket.on("posPlayed", function() {

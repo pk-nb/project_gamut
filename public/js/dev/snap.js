@@ -1,6 +1,9 @@
 // Data object keeping reference to board hexagons
 function BoardManager(paper, numWidth, clipHeight) {
   this.paper = paper;
+  this.width  = $("#paper").width();
+  this.height = $("#svgContainer").height();
+
   this.hexagonAttributes = {
     fill: "#fff"
   };
@@ -83,18 +86,18 @@ BoardManager.prototype.initializeBoard = function() {
     }
   }
 
-  this.width  = $("#paper").width();
-  this.height = $("#svgContainer").height();
+  // Scale height
+  this.boardHeight = this.height * 0.87;
 
   // Center coordinate
   var centerX = this.width / 2;
-  var centerY = this.height / 2;
+  var centerY = this.boardHeight / 2;
 
   // Total number of hexagon rows, or diagonal of
   var rows = ((2 * this.arraySideLength) - 1) - (2 * (this.clipHeight));
 
   var splitWidth = this.width / this.arraySideLength;
-  var splitHeight = this.height / rows;
+  var splitHeight = this.boardHeight / rows;
 
   // Use smaller dimension as basic unit
   this.gridunit = (splitHeight >= splitWidth) ? splitWidth : splitHeight;
@@ -139,8 +142,8 @@ BoardManager.prototype.initializeBoard = function() {
         hex.data("j", indexY);
         hex.data("cx", tempX);
         hex.data("cy", tempY);
+        hexesLeft.push(index);
         this.board[indexX][indexY] = hex;
-        hexIdToIndex[hex.id] = index;
         this.hexGroup.add(hex);
       }
       // Increment top right
@@ -151,6 +154,9 @@ BoardManager.prototype.initializeBoard = function() {
     startX += halfunit;
     startY -= this.yUnit;
   }
+
+
+
 }
 
 /* Public
@@ -166,20 +172,24 @@ BoardManager.prototype.drawBoard = function() {
 
   // Show board
   this.hexGroup.animate({ opacity: 1 }, 1000);
+
 }
 
 // Draws piece, represented by column length strings in array of
-BoardManager.prototype.drawPiece = function(coordinate, row, column, pieceString) {
+BoardManager.prototype.drawPiece = function(coordinate, pieceArray) {
   // Initialize point to draw
   var halfunit = this.gridunit / 2;
+
+  var row = pieceArray.length;
+  var column = pieceArray[0].length;
 
   var pointX = halfunit * (column);
   var pointY = this.yUnit;
 
   // Calculate coordinate (negative values subtract from height / width)
   if ( !(_.isNull(coordinate) || _.isEmpty(coordinate)) ) {
-    var posx = coordinate.x + halfunit * (column);
-    var negx = this.width + coordinate.x - (halfunit * (column));
+    var posx = coordinate.x + pointX;
+    var negx = this.width + coordinate.x - (pointX);
     pointX = (coordinate.x < 0) ? negx : posx;
 
     var posy = this.yUnit + coordinate.y;
@@ -192,14 +202,15 @@ BoardManager.prototype.drawPiece = function(coordinate, row, column, pieceString
   pieceGroup.attr({ opacity: 0 });
 
   // Draw Hex going by row, column
-  for (var i = 0; i < row; i++) {
+  for (var i = 0; i < pieceArray.length; i++) {
     var tempX = pointX;
     var tempY = pointY;
 
-    for (var j = 0; j < column; j++) {
-      if (pieceString[i].charAt(j) === '*') {
+    for (var j = 0; j < pieceArray[i].length; j++) {
+      if (pieceArray[i].charAt(j) === '*') {
         var hex = this.drawHexagonAtPoint(tempX, tempY, this.hexRadius);
-        hex.attr({ fill: "#fa475c" }, 1000);
+        var color = (selfPlayerNumber === 1) ? playerOneColor : playerTwoColor;
+        hex.attr({ fill: color }, 1000);
         // Store index and original center coordinate
         hex.data("i", i);
         hex.data("j", j);
@@ -267,6 +278,46 @@ BoardManager.prototype.validPiecePlay = function(piece, overlapPieceHex, overlap
   return coordinates;
 }
 
+// Animates in a server-validated piece from either player,
+// and updates data. Stores player types on hexagon object
+BoardManager.prototype.updateBoard = function(coordinates, playerNumber, pieceType) {
+  var color = (playerNumber === 1) ? playerOneColor : playerTwoColor;
+  var moneyColor = (playerNumber === 1) ? playerOneMoneyColor : playerTwoMoneyColor;
+
+  for (var k = 0; k < coordinates.length; k++) {
+    var hex = this.board[coordinates[k].i][coordinates[k].j];
+    var animateColor = color;
+
+    hex.data("player", playerNumber);
+    hex.data("pieceType", pieceType);
+    hexesLeft = _.without(hexesLeft, coordinates[k]);
+
+    if (pieceType.money === pieceType) {
+      animateColor = moneyColor;
+
+      if (playerNumber === selfPlayerNumber) {
+        selfMoneyHexList.push(hex);
+      }
+      else {
+        opponentMoneyHexList.push(hex);
+      }
+    }
+    hex.animate({fill: animateColor}, 500);
+  }
+}
+
+BoardManager.prototype.drawPieces = function() {
+  // Draw Piece background
+  this.pieceBackground = this.paper.rect(0, this.boardHeight, this.width, this.height);
+  this.pieceBackground.attr({
+    fill: "#31B4B4",
+    opacity: 0
+  });
+
+  this.pieceBackground.animate({ opacity: 1 }, 1000);
+
+}
+
 // Event hander for after drop. Calulates some hex in piece's coordinate and
 // finds overlap on board. Then checks if entire piece can fit by indexes
 function piecePlay() {
@@ -300,30 +351,31 @@ function piecePlay() {
 }
 
 
+
+
 // Initializes board on page load
 pubsub.subscribe('drawBoard', function(context, gameData) {
   var s = Snap("#paper");
 
   boardManager = new BoardManager(s, gameData.arrayLength, gameData.clipHeight);
-  //console.log(boardManager.board);
 
-  // TODO:
   boardManager.drawBoard();
+  boardManager.drawPieces();
 
   // Create pieces
   // TODO: make a drawPieces function that layouts correctly
-  var piece1 = boardManager.drawPiece({}, 3, 3, ["-*-",
-                                                 "***",
-                                                 "-*-" ]  ).drag();
+  var piece1 = boardManager.drawPiece({}, ["-*-",
+                                           "***",
+                                           "-*-" ]  ).drag();
 
-  var piece2 = boardManager.drawPiece( {x: -1, y: -1}, 2, 2, ["**", "**"]).drag();
+  var piece2 = boardManager.drawPiece( {x: -1, y: -1}, ["**", "**"]).drag();
 
-  var piece3 = boardManager.drawPiece( {x: -1, y: 1}, 4, 4, ["---*",
-                                                             "--**",
-                                                             "****",
-                                                             "*---"]  ).drag();
+  var piece3 = boardManager.drawPiece( {x: -1, y: 1}, ["---*",
+                                                       "--**",
+                                                       "****",
+                                                       "*---"]  ).drag();
 
-  var piece4 = boardManager.drawPiece( {x: 1, y: -1}, 1, 2, ["**"] ).drag();
+  var piece4 = boardManager.drawPiece( {x: 1, y: -1}, ["**"] ).drag();
 
   eve.on('snap.drag.end.' + piece1.id, piecePlay);
   eve.on('snap.drag.end.' + piece2.id, piecePlay);
@@ -331,3 +383,14 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
   eve.on('snap.drag.end.' + piece4.id, piecePlay);
 
 });
+
+pubsub.subscribe("selfUpdateBoard", function(context, indexes) {
+  // TODO send type along
+  boardManager.updateBoard(indexes, selfPlayerNumber, pieceTypes.normal);
+});
+
+pubsub.subscribe("opponentUpdateBoard", function(context, indexes) {
+  // TODO send type along
+  boardManager.updateBoard(indexes, opponentPlayerNumber, pieceTypes.normal);
+});
+

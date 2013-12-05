@@ -10,17 +10,71 @@ var BoardManager;
 // Global app parameters
 var currentRoom = null;
 var userName    = "";
+var selfPlayerNumber;
+var opponentPlayerNumber;
 
 var clockIntervalID = 0;
 
 var timer = 0;
-
 var gameOn = false;
-
-var hexIdToIndex = {};
 
 var playerOneColor = "#FA475C";
 var playerTwoColor = "#FFC749";
+
+var playerOneMoneyColor = "#C7283B";
+var playerTwoMoneyColor = "#CB9929";
+
+// Game Logic Data
+var hexesLeft = [];
+var selfMoneyHexList = [];
+var opponentMoneyHexList = [];
+
+// Constant
+var moneyClockCycles = 6;
+
+var pieceTypes = {
+  normal: 0,
+  money: 1
+};
+
+var boardPieces = [
+  {
+    type: pieceTypes.money,
+    cost: 2,
+    shape: ["*"]
+  },
+  {
+    type: pieceTypes.normal,
+    cost: 2,
+    shape: ["**"]
+  },
+  {
+    type: pieceTypes.normal,
+    cost: 2,
+    shape: ["*-", "*-"]
+  },
+  {
+    type: pieceTypes.normal,
+    cost: 3,
+    shape: ["*-", "**"]
+  },
+  {
+    type: pieceTypes.normal,
+    cost: 3,
+    shape: ["**", "-*"]
+  },
+  {
+    type: pieceTypes.normal,
+    cost: 5,
+    shape: ["----*", "---*-", "--*--", "-*---", "*----"]
+  },
+  {
+    type: pieceTypes.money,
+    cost: 7,
+    shape: ["**", "**"]
+  }
+];
+
 
 /**
  * Array.prototype.[method name] allows you to define/overwrite an objects method
