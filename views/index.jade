@@ -15,7 +15,7 @@ block content
       form(name="newGame", action='')#newGameForm
         fieldset
           label(for='name') Name:
-          input(type='text', name='name', placeholder="alias", required)
+          input(type='text', name='name', placeholder="alias", maxlength="10", required)
           br
           label(for='gameSize') Game Size:
           select(name='gameSize')
