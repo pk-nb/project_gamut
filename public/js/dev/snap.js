@@ -288,9 +288,10 @@ function piecePlay() {
 
     if ( pieceCoordinates ) {
       // Publish coordinates played to game logic
-      _.map(pieceCoordinates, function(c) {
-        boardManager.board[c.i][c.j].animate({fill: "#bada55"}, 500);
-      });
+      pubsub.publish("validPlay", null, pieceCoordinates);
+      // _.map(pieceCoordinates, function(c) {
+      //   boardManager.board[c.i][c.j].animate({fill: "#bada55"}, 500);
+      // });
     }
   } else {
     // TODO animate and return piece to original coordinates
