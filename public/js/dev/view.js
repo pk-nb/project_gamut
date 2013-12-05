@@ -11,10 +11,16 @@ pubsub.subscribe('newGameRequested', function() {
   $('#waitingMessage').fadeIn(600);
 });
 
-pubsub.subscribe('gameStart', function() {
+pubsub.subscribe('gameStart', function(context, data) {
   $('#waiting').fadeOut(300);
   $('#game').show();
   pubsub.publish('drawBoard');
+  if (data.player === 1) {
+    $('#players').html("<span class='one'>" + data.self + "</span> VS <span class='two'>" + data.opponent + "</span>");
+  } else {
+    $('#players').html("<span class='two'>" + data.self + "</span> VS <span class='one'>" + data.opponent + "</span>");
+  }
+
   //$('#debug').fadeIn(600);
   //$('#chat').fadeIn(600);
 });
@@ -39,7 +45,7 @@ function printTimer(string) {
 jQuery( document ).ready(function( $ ) {
 
   $("#chatSubmit").click(function() {sentMessage();});
-  $('#chat').hide();
+  //$('#chat').hide();
   $("#sendPoke").click(function() { sendPoke() });
   $('h2#waitingMessage').hide();
   $('#game').hide();
@@ -66,4 +72,11 @@ jQuery( document ).ready(function( $ ) {
     console.log(formParams);
     startGame(formParams);
   });
+
+  // Use chat library
+  $('#chatLink').sidr({
+    side: 'right'
+  });
+
+
 });

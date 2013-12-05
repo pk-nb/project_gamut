@@ -56,10 +56,12 @@ socket.on('chatMessage', function(data) {
 // GETTING message Display message on client-recieve
 socket.on('gameStart', function(data) {
   console.log(data);
-  printFeedback(data.self + " VS " + data.opponent);
-  currentRoom = data.room; // Save the room so we know who to talk to
-  pubsub.publish('gameStart');
-  gameOn = true; // when game start set to true, timer starts
+  // Save room, currently not being used
+  currentRoom = data.room;
+  // Forward data to client events
+  pubsub.publish("gameStart", null, data);
+  // When game start set to true, timer starts
+  gameOn = true;
 });
 
 // timer test

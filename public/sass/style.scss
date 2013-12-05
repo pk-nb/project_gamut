@@ -2,7 +2,7 @@
 @import "_reset";
 @import "_flex";
 @import "_waiting_animation";
-//@import "_jquery.sidr.light";
+@import "_jquery.sidr.light";
 
 $offwhite-color: #EEEEEE;
 $primary-color: #3ACCCC;
@@ -121,13 +121,18 @@ select {
 //   height: 100%;
 // }
 
-$banner-height: 2em;
+$banner-height: 2.5em;
 
-#game {
-}
 
 #banner {
+  @include box-sizing(border-box);
   height: $banner-height;
+  background-color: rgba(darken($primary-color, 20%), 0.3);
+  text-align: center;
+  color: $offwhite-color;
+
+  position: relative;
+  z-index: 100;
 }
 
 // Stupid fix for webkit bug with svg height
@@ -140,8 +145,6 @@ $banner-height: 2em;
   bottom: 0;
   left: 0;
   right: 0;
-
-  background-color: $secondary-color;
 }
 
 #paper {
@@ -154,4 +157,100 @@ $banner-height: 2em;
   height: 100%;
 }
 
+.bannerlogo {
+  display: inline;
+  height: 100%;
+}
+
+#banner h1 {
+  display: inline;
+  margin-left: 0.125em;
+  font-size: 1.825em;
+}
+
+#chatButton {
+  position: absolute;
+  z-index: 101;
+  top: .125em;
+  right: .125em;
+  color: $offwhite-color;
+}
+
+#banner > ul {
+  //display: inline-block;
+  //font-family: sans-serif;
+  //margin-left: 1em;
+  width: 100%;
+  text-align: center;
+  height: inherit;
+  display: table;
+  table-layout: fixed;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#banner > ul > li {
+  @include box-sizing(border-box);
+  padding: 0.5em;
+  display: inline-block;
+  font-size: 1em;
+  width: auto;
+  height: inherit;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+#banner > ul > li:first-child {
+  text-align: left;
+}
+
+#banner > ul > li:last-child {
+  text-align: right;
+}
+
+#banner a {
+  border-radius: 0.25em;
+  display: inline-block;
+  text-align: center;
+  padding: 0.25em;
+  padding-top: 0.5em;
+  margin: 0.25em;
+  margin-top: -0.25em;
+  color: $offwhite-color;
+  background-color: $primary-color;
+  text-decoration: none;
+}
+
+.one {
+  color: $secondary-color;
+}
+
+span.one {
+  border-radius: 0.25em;
+  display: inline-block;
+  text-align: center;
+  padding: 0.25em;
+  padding-top: 0.5em;
+  margin: 0.25em;
+  margin-top: -0.25em;
+  color: $offwhite-color;
+  background-color: $secondary-color;
+}
+
+.two {
+  color: $tertiary-color;
+}
+
+span.two {
+  border-radius: 0.25em;
+  display: inline-block;
+  text-align: center;
+  padding: 0.25em;
+  padding-top: 0.5em;
+  margin: 0.25em;
+  margin-top: -0.25em;
+  color: $offwhite-color;
+  background-color: $tertiary-color;
+}
 

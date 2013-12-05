@@ -18,8 +18,9 @@ var timer = 0;
 var gameOn = false;
 
 var hexIdToIndex = {};
-//var hexIndexToId = {};
 
+var playerOneColor = "#FA475C";
+var playerTwoColor = "#FFC749";
 
 /**
  * Array.prototype.[method name] allows you to define/overwrite an objects method

@@ -39,7 +39,16 @@ queues.on('connectTwo', function(io, userGameSize) {
   ],
   function(err, result) {
     // Usernames in result[0] and result[1]
-    io.sockets.in(roomID).emit("gameStart", {room: roomID, self: result[0], opponent: result[1]});
+    io.sockets.socket(socketid1).emit("gameStart", {  room: roomID,
+                                                      self: result[0],
+                                                      opponent: result[1],
+                                                      player: 1
+                                                    });
+    io.sockets.socket(socketid2).emit("gameStart", {  room: roomID,
+                                                      self: result[1],
+                                                      opponent: result[0],
+                                                      player: 2
+                                                    });
   });
 });
 

@@ -35,7 +35,7 @@ block content
 
     div#feedback
 
-    div#chat
+    div#sidr
       p#chatEntries
       div#chatControls
         input(type='text')#chatInput
@@ -48,5 +48,15 @@ block content
 
   div#game
     div#banner
+      ul
+        li#players nobody VS nobody
+        li
+          img(src='images/logo.svg', alt='logo for gamut').bannerlogo
+          h1 Gamut
+        li <a href="#sidr" id="chatLink">Chat</a>
+
+
     div#svgContainer
       svg#paper
+
+    //-div#chatButton
