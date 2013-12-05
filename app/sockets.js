@@ -66,6 +66,10 @@ function formValid(gameData, socket) {
     sendError(socket, "nameDuplicate");
     return false;
   }
+  else {
+    socket.emit("nameOK");
+    return true;
+  }
   // Validate gameSize
   if (!us.has(queues, userGameSize)) {
     queues[userGameSize].push(socket.id);

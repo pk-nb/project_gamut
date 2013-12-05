@@ -19,6 +19,9 @@ function sentMessage() {
 
 function startGame(gameParams) {
   socket.emit('newGame', gameParams);
+}
+
+function userValidated() {
   pubsub.publish('newGameRequested');
 }
 
@@ -83,5 +86,13 @@ socket.on("posPlayed", function() {
   console.log("Position already taken by old play.")
 });
 
+socket.on("error", function(errorMessage) {
+  if (errorMessage === "nameDuplicate") {
+    // Let know user that the name is not allowed
+  }
+});
 
-
+socket.on("nameOK", function() {
+  // Go into waiting list
+  userValidated();
+});
