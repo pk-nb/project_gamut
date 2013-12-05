@@ -66,8 +66,13 @@ var boardPieces = [
   {
     type: pieceTypes.normal,
     cost: 5,
-    shape: ["----*", "---*-", "--*--", "-*---", "*----"]
+    shape: ["-*-", "***", "-*-"]
   },
+  // {
+  //   type: pieceTypes.normal,
+  //   cost: 5,
+  //   shape: ["*---", "-*--", "--*-", "---*"]
+  // },
   {
     type: pieceTypes.money,
     cost: 7,

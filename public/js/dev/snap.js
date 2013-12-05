@@ -87,7 +87,7 @@ BoardManager.prototype.initializeBoard = function() {
   }
 
   // Scale height
-  this.boardHeight = this.height * 0.87;
+  this.boardHeight = this.height * 0.8;
 
   // Center coordinate
   var centerX = this.width / 2;
@@ -330,19 +330,34 @@ BoardManager.prototype.drawPieces = function() {
     var centerX = (splitWidth / 2) + (splitWidth * i);
     var centerY = this.boardHeight + (height / 2);
 
-    console.log(piece.getBBox());
     centerX -= (piece.getBBox().width / 2);
-    centerY -= (piece.getBBox().height / 2);
-    console.log("centerX: " + centerX + ", centerY: " + centerY);
+    centerY -= (piece.getBBox().height / 2) + 20;
+
+    // Draw label
+    var cost = this.paper.text(centerX, this.height - 15, "\u2B21" + boardPieces[i].cost);
+    cost.attr({
+      fill: "#EEE"
+    });
+
+    // Ugly hack to offset odd pieces
+    // TODO: rewrite drawPiece and drawPieces to have nice centering
+    if (i === 3) { centerY -= (piece.getBBox().height / 2); }
+    if (i === 5) {
+      centerX -= (piece.getBBox().width / 3);
+      centerY -= (piece.getBBox().height / 4);
+    }
 
     piece.data("cost", boardPieces[i].cost);
     piece.data("type", boardPieces[i].type);
 
-    //piece.transform("t100,100");
-    piece.transform( "t" + centerX + "," + centerY );
+    var transformString = "t" + centerX + "," + centerY;
+    piece.data("originalTransform", transformString);
+    piece.data("originalX", centerX);
+    piece.data("originalY", centerY);
+
+    piece.transform( transformString );
     piece.drag();
     eve.on('snap.drag.end.' + piece.id, piecePlay);
-
   }
 }
 
@@ -369,13 +384,23 @@ function piecePlay() {
       // Publish coordinates played to game logic
       console.log(pieceCoordinates);
       pubsub.publish("validIndexPlay", null, pieceCoordinates);
-      // _.map(pieceCoordinates, function(c) {
-      //   boardManager.board[c.i][c.j].animate({fill: "#bada55"}, 500);
-      // });
+
+      // this.animate({opacity:0}, 200);
+      // this.transform(this.data("originalTransform"));
+      // this.animate({opacity:1}, 1000);
     }
   } else {
     // TODO animate and return piece to original coordinates
+    // this.animate({
+    //     translate: this.data("originalTransform")
+    //   }, 1000);
   }
+
+  this.animate({opacity:0}, 200, mina.linear, function() {
+    this.transform(this.data("originalTransform"));
+    this.animate({opacity:1}, 1000);
+  });
+
 }
 
 
