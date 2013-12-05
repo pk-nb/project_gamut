@@ -42,12 +42,14 @@ queues.on('connectTwo', function(io, userGameSize) {
     io.sockets.socket(socketid1).emit("gameStart", {  room: roomID,
                                                       self: result[0],
                                                       opponent: result[1],
-                                                      player: 1
+                                                      player: 1,
+                                                      gameData: data.types.sizes[userGameSize]
                                                     });
     io.sockets.socket(socketid2).emit("gameStart", {  room: roomID,
                                                       self: result[1],
                                                       opponent: result[0],
-                                                      player: 2
+                                                      player: 2,
+                                                      gameData: data.types.sizes[userGameSize]
                                                     });
   });
 });
@@ -81,6 +83,7 @@ function sendError(socket, errorMessage) {
 }
 
 module.exports = function(io) {
+  io.set('log level', 1); // reduce logging
   io.sockets.on('connection', function (socket) {
 
     // Initial message from new game form on client
@@ -94,9 +97,9 @@ module.exports = function(io) {
         // Initialize board array data
         var boardArray = [];
         for (var row = 0; row < data.types.sizes[userGameSize].arrayLength; row++) {
-          boardArray[row] = [];
+          boardArray.push([]);
           for (var column = 0; column < data.types.sizes[userGameSize].arrayLength; column++) {
-            boardArray[row][column] = false;
+            boardArray[row].push(false);
           };
         };
         // Store both vars then run call back pushing socket onto queue
@@ -112,7 +115,7 @@ module.exports = function(io) {
     }); // END startGame
 
     // Server stores which pieces have been placed and notifies clients
-    socket.on('piecePlayed', function(coordinates){
+    socket.on('piecePlayed', function(coordinates) {
       // get boardArray from socket
       socket.get('boardArray', function(err, boardArray) {
         var positionPlayed = false; // flag
@@ -121,32 +124,31 @@ module.exports = function(io) {
             positionPlayed = true; // if coordinate has been played, end loop and flag is true
         };
 
-        if (positionPlayed == false) { 
-        // it's OK to play
+        // It's OK to play
+        if (positionPlayed == false) {
+          // Update board with piece
           for (var a = 0; a < coordinates.length; a++) {
-            boardArray[coordinates[a].i][coordinates[a].j] == true; // set pieces to true
-            socket.get('roomID', function(err, roomID) {
-              var roster = io.sockets.clients(roomID); // get clients in the room
-              //console.log(roster);
-              for(id in roster) {
-                var _socket = roster[id];
-                _socket.set('boardArray', boardArray); // save boardArray in all the clients' sockets 
-              };
-            });
-          };
-          /* TO DO
-            - Test that it is emitting only to sender
-            */
-          // emit message to (only) player that it's OK to play piece
-          io.sockets.socket(socket.id).emit("updateBoard", coordinates);
-          // emit message to (only) enemy of what piece was played
+            boardArray[coordinates[a].i][coordinates[a].j] = true; // set pieces to true
+          }
+
+          // Store updated array on both sockets
           socket.get('roomID', function(err, roomID) {
-              io.sockets.in(roomID).emit("updateBoard", coordinates);
+            var roster = io.sockets.clients(roomID); // get clients in the room
+            for(s in roster) {
+              io.sockets.socket(s.id).set('boardArray', boardArray); // save boardArray in all the clients' sockets
+            };
+          });
+
+          // Emit message to (only) player that it's OK to play piece
+          io.sockets.socket(socket.id).emit("selfUpdateBoard", coordinates);
+          // Emit message to (only) enemy of what piece was played
+          socket.get('roomID', function(err, roomID) {
+              socket.broadcast.to(roomID).emit("opponentUpdateBoard", coordinates);
           });
         }
-        else{ // positionPlayed == true
-        // emit message to player that it is NOT OK to play piece
-          io.sockets.socket(socket.id).emit("posPlayed", coordinates);
+        else { // positionPlayed == true
+          // Emit message to player that it is NOT OK to play piece
+          io.sockets.socket(socket.id).emit("posPlayed");
         }
       });
     });

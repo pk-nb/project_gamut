@@ -288,7 +288,8 @@ function piecePlay() {
 
     if ( pieceCoordinates ) {
       // Publish coordinates played to game logic
-      pubsub.publish("validPlay", null, pieceCoordinates);
+      console.log(pieceCoordinates);
+      pubsub.publish("validIndexPlay", null, pieceCoordinates);
       // _.map(pieceCoordinates, function(c) {
       //   boardManager.board[c.i][c.j].animate({fill: "#bada55"}, 500);
       // });
@@ -300,10 +301,10 @@ function piecePlay() {
 
 
 // Initializes board on page load
-pubsub.subscribe('drawBoard', function() {
+pubsub.subscribe('drawBoard', function(context, gameData) {
   var s = Snap("#paper");
 
-  boardManager = new BoardManager(s, 27, 13);
+  boardManager = new BoardManager(s, gameData.arrayLength, gameData.clipHeight);
   //console.log(boardManager.board);
 
   // TODO:

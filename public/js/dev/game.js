@@ -9,9 +9,21 @@ pubsub.subscribe('gameStart', function() {
   clockIntervalID = window.setInterval(clock, 1000);
 });
 
+pubsub.subscribe('validIndexPlay', function(context, indexes) {
+
+  // Validiate move by game board
+  // Check if next to correct color,
+  // Not overlapping another color, etc
+
+  pubsub.publish('validPlay', null, indexes);
+
+});
+
 // Hexagon model
 var hexagon = {
   type: "",
   owner: "",
   origin: {}
 }
+
+

@@ -1,6 +1,8 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
-
+pubsub.subscribe('validPlay', function(context, indexes) {
+  socket.emit("piecePlayed", indexes);
+});
 
 // update both client's timer
 function sentTimer() {
@@ -71,3 +73,20 @@ socket.on('timer', function (data) {
     sentTimer();
   }
 });
+
+socket.on("selfUpdateBoard", function(indexes) {
+  console.log("Ok to play piece: ");
+  console.log(indexes);
+});
+
+socket.on("opponentUpdateBoard", function(indexes) {
+  console.log("Opponent played piece: ");
+  console.log(indexes);
+});
+
+socket.on("posPlayed", function() {
+  console.log("Position already taken by old play.")
+});
+
+
+

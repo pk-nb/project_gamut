@@ -8,10 +8,28 @@ exports.Queues = function() {
 }
 
 exports.types = {
-    sizes : {
-      small  : { id : 'small',  arrayLength : 19, clipHeight: 9,  description : "10 Hexagon" },
-      medium : { id : 'medium', arrayLength : 23, clipHeight: 11, description : "12 Hexagon" },
-      large  : { id : 'large',  arrayLength : 27, clipHeight: 13, description : "14 Hexagon" }
+  sizes : {
+    small  : {
+      id : 'small',
+      arrayLength : 19,
+      clipHeight: 9,
+      startIndexes: { 1: {i: 9, j: 1}, 2: {i: 9, j: 17} },
+      description : "10 Hexagon"
+    },
+    medium : {
+      id : 'medium',
+      arrayLength : 23,
+      clipHeight: 11,
+      startIndexes: { 1: {i: 9, j: 1}, 2: {i: 9, j: 17} },
+      description : "12 Hexagon"
+    },
+    large  : {
+      id : 'large',
+      arrayLength : 27,
+      clipHeight: 13,
+      startIndexes: { 1: {i: 9, j: 1}, 2: {i: 9, j: 17} },
+      description : "14 Hexagon"
+    }
   }
 }
 

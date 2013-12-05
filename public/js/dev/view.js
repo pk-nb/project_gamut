@@ -14,7 +14,8 @@ pubsub.subscribe('newGameRequested', function() {
 pubsub.subscribe('gameStart', function(context, data) {
   $('#waiting').fadeOut(300);
   $('#game').show();
-  pubsub.publish('drawBoard');
+  console.log(data);
+  pubsub.publish('drawBoard', null, data.gameData);
   if (data.player === 1) {
     $('#players').html("<span class='one'>" + data.self + "</span> VS <span class='two'>" + data.opponent + "</span>");
   } else {
