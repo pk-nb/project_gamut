@@ -176,7 +176,7 @@ BoardManager.prototype.drawBoard = function() {
 }
 
 // Draws piece, represented by column length strings in array of
-BoardManager.prototype.drawPiece = function(coordinate, pieceArray) {
+BoardManager.prototype.drawPiece = function(coordinate, pieceArray, piece) {
   // Initialize point to draw
   var halfunit = this.gridunit / 2;
 
@@ -201,6 +201,13 @@ BoardManager.prototype.drawPiece = function(coordinate, pieceArray) {
   pointX -= (this.hexRadius / 2);
   pointY -= (this.hexRadius / 2);
 
+  // Calculate piece color
+  var color = (selfPlayerNumber === 1) ? playerOneColor : playerTwoColor;
+  if (piece.type === pieceTypes.money) {
+    console.log("piece is of the money type");
+    color = (selfPlayerNumber === 1) ? playerOneMoneyColor : playerTwoMoneyColor;
+  }
+
   // Piece in group
   var pieceGroup = this.paper.g();
   pieceGroup.attr({ opacity: 0 });
@@ -213,7 +220,7 @@ BoardManager.prototype.drawPiece = function(coordinate, pieceArray) {
     for (var j = 0; j < pieceArray[i].length; j++) {
       if (pieceArray[i].charAt(j) === '*') {
         var hex = this.drawHexagonAtPoint(tempX, tempY, this.hexRadius);
-        var color = (selfPlayerNumber === 1) ? playerOneColor : playerTwoColor;
+
         hex.attr({ fill: color }, 1000);
         // Store index and original center coordinate
         hex.data("i", i);
@@ -284,7 +291,7 @@ BoardManager.prototype.validPiecePlay = function(piece, overlapPieceHex, overlap
 
 // Animates in a server-validated piece from either player,
 // and updates data. Stores player types on hexagon object
-BoardManager.prototype.updateBoard = function(coordinates, playerNumber, pieceType) {
+BoardManager.prototype.updateBoard = function(coordinates, playerNumber, piece) {
   var color = (playerNumber === 1) ? playerOneColor : playerTwoColor;
   var moneyColor = (playerNumber === 1) ? playerOneMoneyColor : playerTwoMoneyColor;
 
@@ -293,10 +300,11 @@ BoardManager.prototype.updateBoard = function(coordinates, playerNumber, pieceTy
     var animateColor = color;
 
     hex.data("player", playerNumber);
-    hex.data("pieceType", pieceType);
+    hex.data("pieceType", piece.type);
     hexesLeft = _.without(hexesLeft, coordinates[k]);
 
-    if (pieceType.money === pieceType) {
+    if (pieceTypes.money === piece.type) {
+      console.log("Piece of the money type");
       animateColor = moneyColor;
 
       if (playerNumber === selfPlayerNumber) {
@@ -325,7 +333,7 @@ BoardManager.prototype.drawPieces = function() {
 
 
   for (var i = 0; i < boardPieces.length; i++) {
-    var piece = this.drawPiece({}, boardPieces[i].shape);
+    var piece = this.drawPiece({}, boardPieces[i].shape, boardPieces[i]);
 
     var centerX = (splitWidth / 2) + (splitWidth * i);
     var centerY = this.boardHeight + (height / 2);
@@ -347,8 +355,10 @@ BoardManager.prototype.drawPieces = function() {
       centerY -= (piece.getBBox().height / 4);
     }
 
+    // TODO: cleanup, no need to store same data
     piece.data("cost", boardPieces[i].cost);
     piece.data("type", boardPieces[i].type);
+    piece.data("piece", boardPieces[i]);
 
     var transformString = "t" + centerX + "," + centerY;
     piece.data("originalTransform", transformString);
@@ -383,7 +393,7 @@ function piecePlay() {
     if ( pieceCoordinates ) {
       // Publish coordinates played to game logic
       console.log(pieceCoordinates);
-      pubsub.publish("validIndexPlay", null, pieceCoordinates);
+      pubsub.publish("validIndexPlay", null, pieceCoordinates, this.data("piece"));
 
       // this.animate({opacity:0}, 200);
       // this.transform(this.data("originalTransform"));
@@ -437,13 +447,14 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
 
 });
 
-pubsub.subscribe("selfUpdateBoard", function(context, indexes) {
+pubsub.subscribe("selfUpdateBoard", function(context, indexes, piece) {
   // TODO send type along
-  boardManager.updateBoard(indexes, selfPlayerNumber, pieceTypes.normal);
+  console.log(piece);
+  boardManager.updateBoard(indexes, selfPlayerNumber, piece);
 });
 
-pubsub.subscribe("opponentUpdateBoard", function(context, indexes) {
+pubsub.subscribe("opponentUpdateBoard", function(context, indexes, piece) {
   // TODO send type along
-  boardManager.updateBoard(indexes, opponentPlayerNumber, pieceTypes.normal);
+  boardManager.updateBoard(indexes, opponentPlayerNumber, piece);
 });
 

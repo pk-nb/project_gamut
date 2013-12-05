@@ -21,8 +21,8 @@ var gameOn = false;
 var playerOneColor = "#FA475C";
 var playerTwoColor = "#FFC749";
 
-var playerOneMoneyColor = "#C7283B";
-var playerTwoMoneyColor = "#CB9929";
+var playerOneMoneyColor = "#FEBDC4";
+var playerTwoMoneyColor = "#FFDB8A";
 
 // Game Logic Data
 var hexesLeft = [];

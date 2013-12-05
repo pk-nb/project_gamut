@@ -13,13 +13,18 @@ pubsub.subscribe('gameStart', function(context, data) {
   gameOn = true;            // When game start set to true, timer starts
 });
 
-pubsub.subscribe('validIndexPlay', function(context, indexes) {
+pubsub.subscribe('validIndexPlay', function(context, indexes, piece) {
+
+  var adjacent = false;
 
   // Validiate move by game board
   // Check if next to correct color,
   // Not overlapping another color, etc
 
-  pubsub.publish('validPlay', null, indexes);
+
+
+
+  pubsub.publish('validPlay', null, indexes, piece);
 
 });
 

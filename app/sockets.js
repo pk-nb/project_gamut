@@ -115,7 +115,7 @@ module.exports = function(io) {
     }); // END startGame
 
     // Server stores which pieces have been placed and notifies clients
-    socket.on('piecePlayed', function(coordinates) {
+    socket.on('piecePlayed', function(coordinates, piece) {
       // get boardArray from socket
       socket.get('boardArray', function(err, boardArray) {
         var positionPlayed = false; // flag
@@ -140,10 +140,10 @@ module.exports = function(io) {
               function(callback) { roster[1].set('boardArray', boardArray, callback); }
             ], function() {
               // Emit message to (only) player that it's OK to play piece
-              io.sockets.socket(socket.id).emit("selfUpdateBoard", coordinates);
+              io.sockets.socket(socket.id).emit("selfUpdateBoard", coordinates, piece);
               // Emit message to (only) enemy of what piece was played
               socket.get('roomID', function(err, roomID) {
-                socket.broadcast.to(roomID).emit("opponentUpdateBoard", coordinates);
+                socket.broadcast.to(roomID).emit("opponentUpdateBoard", coordinates, piece);
               });
             });
           });

@@ -1,7 +1,7 @@
 /* Socket (echoes events to gamelogic)
  *************************************/
-pubsub.subscribe('validPlay', function(context, indexes) {
-  socket.emit("piecePlayed", indexes);
+pubsub.subscribe('validPlay', function(context, indexes, piece) {
+  socket.emit("piecePlayed", indexes, piece);
 });
 
 // update both client's timer
@@ -69,14 +69,14 @@ socket.on('timer', function (data) {
   }
 });
 
-socket.on("selfUpdateBoard", function(indexes) {
+socket.on("selfUpdateBoard", function(indexes, piece) {
   // console.log("Ok to play piece: ");
-  pubsub.publish("selfUpdateBoard", null, indexes);
+  pubsub.publish("selfUpdateBoard", null, indexes, piece);
 });
 
-socket.on("opponentUpdateBoard", function(indexes) {
+socket.on("opponentUpdateBoard", function(indexes, piece) {
   // console.log("Opponent played piece: ");
-  pubsub.publish("opponentUpdateBoard", null, indexes);
+  pubsub.publish("opponentUpdateBoard", null, indexes, piece);
 });
 
 socket.on("posPlayed", function() {
