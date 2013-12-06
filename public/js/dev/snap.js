@@ -291,7 +291,7 @@ BoardManager.prototype.validPiecePlay = function(piece, overlapPieceHex, overlap
 
 // Animates in a server-validated piece from either player,
 // and updates data. Stores player types on hexagon object
-BoardManager.prototype.updateBoard = function(coordinates, playerNumber, piece) {
+BoardManager.prototype.updateBoard = function(coordinates, playerNumber, pieceType) {
   var color = (playerNumber === 1) ? playerOneColor : playerTwoColor;
   var moneyColor = (playerNumber === 1) ? playerOneMoneyColor : playerTwoMoneyColor;
 
@@ -300,10 +300,10 @@ BoardManager.prototype.updateBoard = function(coordinates, playerNumber, piece) 
     var animateColor = color;
 
     hex.data("player", playerNumber);
-    hex.data("pieceType", piece.type);
+    hex.data("pieceType", pieceType);
     hexesLeft = _.without(hexesLeft, coordinates[k]);
 
-    if (pieceTypes.money === piece.type) {
+    if (pieceTypes.money === pieceType) {
       console.log("Piece of the money type");
       animateColor = moneyColor;
 
@@ -425,6 +425,12 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
   boardManager.drawBoard();
   boardManager.drawPieces();
 
+  // Draw Start Pieces
+
+
+
+  boardManager.updateBoard( [ gameData.startIndexes[selfPlayerNumber]], selfPlayerNumber, pieceTypes.money);
+  boardManager.updateBoard( [ gameData.startIndexes[opponentPlayerNumber]], opponentPlayerNumber, pieceTypes.money);
   // Create pieces
   // TODO: make a drawPieces function that layouts correctly
   // var piece1 = boardManager.drawPiece({}, ["-*-",
@@ -450,11 +456,11 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
 pubsub.subscribe("selfUpdateBoard", function(context, indexes, piece) {
   // TODO send type along
   console.log(piece);
-  boardManager.updateBoard(indexes, selfPlayerNumber, piece);
+  boardManager.updateBoard(indexes, selfPlayerNumber, piece.type);
 });
 
 pubsub.subscribe("opponentUpdateBoard", function(context, indexes, piece) {
   // TODO send type along
-  boardManager.updateBoard(indexes, opponentPlayerNumber, piece);
+  boardManager.updateBoard(indexes, opponentPlayerNumber, piece.type);
 });
 

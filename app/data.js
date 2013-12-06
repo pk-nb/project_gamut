@@ -20,14 +20,14 @@ exports.types = {
       id : 'medium',
       arrayLength : 23,
       clipHeight: 11,
-      startIndexes: { 1: {i: 9, j: 1}, 2: {i: 9, j: 17} },
+      startIndexes: { 1: {i: 11, j: 1}, 2: {i: 11, j: 21} },
       description : "12 Hexagon"
     },
     large  : {
       id : 'large',
       arrayLength : 27,
       clipHeight: 13,
-      startIndexes: { 1: {i: 9, j: 1}, 2: {i: 9, j: 17} },
+      startIndexes: { 1: {i: 13, j: 1}, 2: {i: 13, j: 25} },
       description : "14 Hexagon"
     }
   }

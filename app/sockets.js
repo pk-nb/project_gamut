@@ -100,12 +100,20 @@ module.exports = function(io) {
 
         // Initialize board array data
         var boardArray = [];
+
+        // TODO: Put array generation code in own function
         for (var row = 0; row < data.types.sizes[userGameSize].arrayLength; row++) {
           boardArray.push([]);
           for (var column = 0; column < data.types.sizes[userGameSize].arrayLength; column++) {
             boardArray[row].push(false);
           };
         };
+
+        // Set initial pieces to used
+        var c = data.types.sizes[userGameSize].startIndexes;
+        boardArray[c[1].i][c[1].j] = true;
+        boardArray[c[2].i][c[2].j] = true;
+
         // Store both vars then run call back pushing socket onto queue
         async.parallel([
           function(callback) { socket.set('userName', userName, callback); },
