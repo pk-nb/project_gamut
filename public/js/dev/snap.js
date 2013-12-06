@@ -232,7 +232,6 @@ BoardManager.prototype.drawPiece = function(coordinate, pieceArray, piece) {
   // Calculate piece color
   var color = (selfPlayerNumber === 1) ? playerOneColor : playerTwoColor;
   if (piece.type === pieceTypes.money) {
-    console.log("piece is of the money type");
     color = (selfPlayerNumber === 1) ? playerOneMoneyColor : playerTwoMoneyColor;
   }
 
@@ -400,6 +399,8 @@ BoardManager.prototype.drawPieces = function() {
     piece.transform( transformString );
     piece.drag();
     eve.on('snap.drag.end.' + piece.id, piecePlay);
+
+    this.pieces.push(piece);
   }
 }
 
@@ -426,7 +427,7 @@ function piecePlay() {
     if ( pieceCoordinates ) {
       // Publish coordinates played to game logic
       //console.log(pieceCoordinates);
-      pubsub.publish("validIndexPlay", null, pieceCoordinates, this.data("piece"));
+      pubsub.publish("validIndexPlay", null, pieceCoordinates, this);
     }
   } else {
     // TODO animate and return piece to original coordinates
@@ -455,6 +456,9 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
   // Draw Start Pieces
   boardManager.updateBoard( [ gameData.startIndexes[selfPlayerNumber]], selfPlayerNumber, pieceTypes.money);
   boardManager.updateBoard( [ gameData.startIndexes[opponentPlayerNumber]], opponentPlayerNumber, pieceTypes.money);
+
+  // Initially set pieces to disabled
+  pubsub.publish("moneyUpdate");
 
   // boardManager.adjacentHexagons({i: 5, j: 2});
   // boardManager.adjacentHexagons({i: 0, j: 1});
@@ -494,4 +498,58 @@ pubsub.subscribe("opponentUpdateBoard", function(context, indexes, piece) {
   // TODO send type along
   boardManager.updateBoard(indexes, opponentPlayerNumber, piece.type);
 });
+
+pubsub.subscribe("moneyViewUpdate", function(context, hex) {
+
+  hex.animate({fill: "#9aba33"}, 400, mina.linear, function() {
+    var color = (hex.data("player") === 1 ) ? playerOneMoneyColor : playerTwoMoneyColor;
+    this.animate({fill: color}, 400);
+  });
+
+});
+
+pubsub.subscribe("opponentMoneyViewUpdate", function(context, hexIndex) {
+  var hex = boardManager.board[hexIndex.i][hexIndex.j];
+  hex.animate({fill: "#9aba33"}, 400, mina.linear, function() {
+    var color = (hex.data("player") === 1 ) ? playerOneMoneyColor : playerTwoMoneyColor;
+    this.animate({fill: color}, 400);
+  });
+});
+
+pubsub.subscribe("moneyUpdate", function() {
+  var grey = "#999";
+  var color;
+
+  for (var i = 0; i < boardManager.pieces.length; i++) {
+    var piece = boardManager.pieces[i];
+    if ( money >= piece.data("cost") ) {
+
+      // If piece not already enabled, reenable
+      if ( !piece.data("enabled") ) {
+        if (piece.data("type") === pieceTypes.money) {
+          color = ( selfPlayerNumber === 1 ) ? playerOneMoneyColor : playerTwoMoneyColor;
+        }
+        else {
+          color = ( selfPlayerNumber === 1 ) ? playerOneColor : playerTwoColor;
+        }
+
+        piece.selectAll("*").forEach(function(el) {
+          el.animate({fill: color}, 300);
+        });
+        piece.drag()
+        eve.on('snap.drag.end.' + piece.id, piecePlay);
+        piece.data("enabled", true);
+      }
+    }
+    else {
+      piece.selectAll("*").forEach(function(el) {
+        el.animate({fill: grey}, 300);
+      });
+      piece.undrag();
+      piece.data("enabled", false);
+    }
+  }
+});
+
+
 

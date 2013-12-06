@@ -28,7 +28,6 @@ pubsub.subscribe('gameStart', function(context, data) {
 
 
 pubsub.subscribe("moneyUpdate", function() {
-  console.log("moneyUpdate view");
   $("#moneyField").html("\u2B21" + money);
   // $("#moneyField").fadeOut("fast").html("");
   // $("#moneyField").fadeIn("fast").html("\u2B21" + money);

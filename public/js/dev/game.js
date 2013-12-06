@@ -9,7 +9,7 @@ pubsub.subscribe("serverClock", function() {
     var hex = selfMoneyHexList[i];
     // Increment money counter
     hex.data("moneyCounter", (hex.data("moneyCounter") + 1));
-    console.log("moneyCounter: " + hex.data("moneyCounter"))
+    //console.log("moneyCounter: " + hex.data("moneyCounter"))
     if (hex.data("moneyCounter") === moneyClockCycles) {
       // Send money add message
       pubsub.publish("moneyIncrement", null, hex);
@@ -19,9 +19,14 @@ pubsub.subscribe("serverClock", function() {
 });
 
 pubsub.subscribe("moneyIncrement", function(context, hex) {
-  console.log("moneyIncrement");
+  //console.log("moneyIncrement");
   money++;
-  pubsub.publish("moneyUpdate", null, hex);
+  pubsub.publish("moneyViewUpdate", null, hex);
+  pubsub.publish("moneyUpdate");
+});
+
+pubsub.subscribe("moneyDecrement", function(context, hex) {
+
 });
 
 
@@ -47,12 +52,20 @@ pubsub.subscribe('validIndexPlay', function(context, indexes, piece) {
 
   if (adjacent) {
     // subtract $$
-    pubsub.publish('validPlay', null, indexes, piece);
+    // console.log("piece cost: " + piece.data("cost"));
+    // money -= piece.data("cost");
+    // pubsub.publish("moneyUpdate");
+    pubsub.publish('validPlay', null, indexes, piece.data("piece"));
   }
   else {
     pubsub.publish('invalidPlay');
   }
 });
+
+pubsub.subscribe("selfUpdateBoard", function(context, indexes, piece) {
+  money -= piece.cost;
+  pubsub.publish("moneyUpdate");
+})
 
 // Hexagon model
 var hexagon = {

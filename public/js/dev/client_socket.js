@@ -4,15 +4,17 @@ pubsub.subscribe('validPlay', function(context, indexes, piece) {
   socket.emit("piecePlayed", indexes, piece);
 });
 
+pubsub.subscribe('moneyViewUpdate', function(context, hex) {
+  emitGameMessage("opponentMoneyViewUpdate", {i: hex.data("i"), j: hex.data("j")} );
+});
+
 // update both client's timer
 function sentTimer() {
-  console.log("sentTimer");
   pubsub.publish("serverClock");
 }
 
 function sentMessage() {
-   if ($('#chatInput').val() != "")
-   {
+   if ($('#chatInput').val() != "") {
       emitGameMessage('chatMessage', userName + ': ' +  $('#chatInput').val() );
       $('#chatInput').val('');
    }
@@ -81,6 +83,10 @@ socket.on("selfUpdateBoard", function(indexes, piece) {
 socket.on("opponentUpdateBoard", function(indexes, piece) {
   // console.log("Opponent played piece: ");
   pubsub.publish("opponentUpdateBoard", null, indexes, piece);
+});
+
+socket.on("opponentMoneyViewUpdate", function(hexIndex) {
+  pubsub.publish("opponentMoneyViewUpdate", null, hexIndex);
 });
 
 socket.on("posPlayed", function() {
