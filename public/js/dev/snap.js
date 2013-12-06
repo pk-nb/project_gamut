@@ -30,6 +30,7 @@ function BoardManager(paper, numWidth, clipHeight) {
   this.initializeBoard();
 
   this.pieces = [];
+  this.adjacencyList = [];
 }
 
 /* Private, internal methods
@@ -46,7 +47,7 @@ BoardManager.prototype.clipIndexes = function() {
     for (var j = 0; j < this.arraySideLength; j++) {
       var addSize = i + j;
       if ( (addSize <= low) || (addSize >= high) ) {
-        indexes.push( {x: i, y: j} );
+        indexes.push( {i: i, j: j} );
       }
     }
   }
@@ -133,7 +134,7 @@ BoardManager.prototype.initializeBoard = function() {
     var tempY = startY;
 
     for (var indexY = 0; indexY <= topIndex; indexY++) {
-      var index = {x: indexX, y: indexY};
+      var index = {i: indexX, j: indexY};
 
       // If not a clipped off hex, draw and store reference on board and lookup table
       if ( !clipIndexes.contains(index) ) {
@@ -154,9 +155,36 @@ BoardManager.prototype.initializeBoard = function() {
     startX += halfunit;
     startY -= this.yUnit;
   }
+}
 
+// Updates adjacencyList on piece play
+BoardManager.prototype.updateAdjacentHexagons = function(coordinates) {
+  // Add all adjacent hexes to list
+  for (var k = 0; k < coordinates.length; k++) {
+    //console.log(this.adjacentHexagons(coordinates[k]));
+    this.adjacencyList = _.union( this.adjacencyList, this.adjacentHexagons(coordinates[k]) );
+  }
+  this.adjacencyList = intersectionObjects(hexesLeft, this.adjacencyList);
+}
 
+// Gets adjacent hexagons for given index
+BoardManager.prototype.adjacentHexagons = function(index) {
+  var indexes = [];
+  for (var a = -1; a <= 1; a++) {
+    for (var b = -1; b <= 1; b++) {
 
+      var ix = index.i + a;
+      var jy = index.j + b;
+
+      if (a === b) { continue; }
+      if ( ix < 0 || ix >= this.board.length) { continue; }
+      if ( jy < 0 || jy >= this.board.length) { continue; }
+      if ( this.clipIndexes().contains({i: ix, j: jy}) ) { continue; }
+
+      indexes.push({i: ix, j: jy});
+    }
+  }
+  return indexes;
 }
 
 /* Public
@@ -301,13 +329,12 @@ BoardManager.prototype.updateBoard = function(coordinates, playerNumber, pieceTy
 
     hex.data("player", playerNumber);
     hex.data("pieceType", pieceType);
-    hexesLeft = _.without(hexesLeft, coordinates[k]);
 
     if (pieceTypes.money === pieceType) {
-      console.log("Piece of the money type");
       animateColor = moneyColor;
 
       if (playerNumber === selfPlayerNumber) {
+        hex.data("moneyCounter", 0);
         selfMoneyHexList.push(hex);
       }
       else {
@@ -315,6 +342,11 @@ BoardManager.prototype.updateBoard = function(coordinates, playerNumber, pieceTy
       }
     }
     hex.animate({fill: animateColor}, 500);
+  }
+
+  hexesLeft = _.without(hexesLeft, coordinates);
+  if (playerNumber === selfPlayerNumber) {
+    this.updateAdjacentHexagons(coordinates);
   }
 }
 
@@ -371,6 +403,7 @@ BoardManager.prototype.drawPieces = function() {
   }
 }
 
+
 // Event hander for after drop. Calulates some hex in piece's coordinate and
 // finds overlap on board. Then checks if entire piece can fit by indexes
 function piecePlay() {
@@ -392,12 +425,8 @@ function piecePlay() {
 
     if ( pieceCoordinates ) {
       // Publish coordinates played to game logic
-      console.log(pieceCoordinates);
+      //console.log(pieceCoordinates);
       pubsub.publish("validIndexPlay", null, pieceCoordinates, this.data("piece"));
-
-      // this.animate({opacity:0}, 200);
-      // this.transform(this.data("originalTransform"));
-      // this.animate({opacity:1}, 1000);
     }
   } else {
     // TODO animate and return piece to original coordinates
@@ -414,8 +443,6 @@ function piecePlay() {
 }
 
 
-
-
 // Initializes board on page load
 pubsub.subscribe('drawBoard', function(context, gameData) {
   var s = Snap("#paper");
@@ -426,11 +453,15 @@ pubsub.subscribe('drawBoard', function(context, gameData) {
   boardManager.drawPieces();
 
   // Draw Start Pieces
-
-
-
   boardManager.updateBoard( [ gameData.startIndexes[selfPlayerNumber]], selfPlayerNumber, pieceTypes.money);
   boardManager.updateBoard( [ gameData.startIndexes[opponentPlayerNumber]], opponentPlayerNumber, pieceTypes.money);
+
+  // boardManager.adjacentHexagons({i: 5, j: 2});
+  // boardManager.adjacentHexagons({i: 0, j: 1});
+  // boardManager.adjacentHexagons({i: 10, j: 17});
+  // boardManager.adjacentHexagons({i: 0, j: 18});
+
+
   // Create pieces
   // TODO: make a drawPieces function that layouts correctly
   // var piece1 = boardManager.drawPiece({}, ["-*-",

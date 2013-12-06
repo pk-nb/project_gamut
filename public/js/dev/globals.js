@@ -15,7 +15,7 @@ var opponentPlayerNumber;
 
 var clockIntervalID = 0;
 
-var timer = 0;
+//var timer = 0;
 var gameOn = false;
 
 var playerOneColor = "#FA475C";
@@ -28,6 +28,7 @@ var playerTwoMoneyColor = "#FFDB8A";
 var hexesLeft = [];
 var selfMoneyHexList = [];
 var opponentMoneyHexList = [];
+var money = 0;
 
 // Constant
 var moneyClockCycles = 6;
@@ -92,5 +93,41 @@ Array.prototype.contains = function ( needle ) {
        if (_.isEqual(this[i], needle)) return true;
    }
    return false;
+}
+
+
+// Replacement for underscore's intersection
+// taken from http://stackoverflow.com/questions/8672383/how-to-use-underscores-intersection-on-objects?rq=1
+function intersectionObjects2(a, b, areEqualFunction) {
+    var Result = [];
+
+    for(var i = 0; i < a.length; i++) {
+        var aElement = a[i];
+        var existsInB = _.any(b, function(bElement) { return areEqualFunction(bElement, aElement); });
+        if(existsInB) {
+            Result.push(aElement);
+        }
+    }
+
+    return Result;
+}
+
+function intersectionObjects() {
+    var Results = arguments[0];
+    var LastArgument = arguments[arguments.length - 1];
+    var ArrayCount = arguments.length;
+    var areEqualFunction = _.isEqual;
+
+    if(typeof LastArgument === "function") {
+        areEqualFunction = LastArgument;
+        ArrayCount--;
+    }
+
+    for(var i = 1; i < ArrayCount ; i++) {
+        var array = arguments[i];
+        Results = intersectionObjects2(Results, array, areEqualFunction);
+        if(Results.length === 0) break;
+    }
+    return Results;
 }
 

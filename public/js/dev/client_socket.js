@@ -6,7 +6,8 @@ pubsub.subscribe('validPlay', function(context, indexes, piece) {
 
 // update both client's timer
 function sentTimer() {
-  emitGameMessage('timerUpdate', timer );
+  console.log("sentTimer");
+  pubsub.publish("serverClock");
 }
 
 function sentMessage() {
@@ -65,9 +66,9 @@ socket.on('gameStart', function(data) {
 });
 
 // timer test
-socket.on('timer', function (data) {
+socket.on('timer', function(data) {
   if (gameOn) {
-    timer++;
+    //timer++;
     sentTimer();
   }
 });

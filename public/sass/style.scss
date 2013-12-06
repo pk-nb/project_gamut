@@ -253,3 +253,23 @@ span.two {
   background-color: $tertiary-color;
 }
 
+
+#money {
+  position: absolute;
+  top: 3em;
+  left: 0.5em;
+}
+
+#money p {
+  border-radius: 0.25em;
+  display: inline-block;
+  text-align: center;
+  padding: 0.25em;
+  padding-top: 0.5em;
+  margin: 0.25em;
+  margin-top: -0.25em;
+  color: $offwhite-color;
+  background-color: $primary-dark-color;
+  text-decoration: none;
+}
+

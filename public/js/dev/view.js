@@ -26,6 +26,15 @@ pubsub.subscribe('gameStart', function(context, data) {
   //$('#chat').fadeIn(600);
 });
 
+
+pubsub.subscribe("moneyUpdate", function() {
+  console.log("moneyUpdate view");
+  $("#moneyField").html("\u2B21" + money);
+  // $("#moneyField").fadeOut("fast").html("");
+  // $("#moneyField").fadeIn("fast").html("\u2B21" + money);
+});
+
+
 // Debug log
 function printFeedback(string) {
   $('#debug').append("<p>" + string + "</p>");
