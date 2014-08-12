@@ -5,7 +5,7 @@ exports.Queues = function() {
   this.small   = [];
   this.medium  = [];
   this.large   = [];
-}
+};
 
 exports.types = {
   sizes : {
@@ -31,6 +31,6 @@ exports.types = {
       description : "14 Hexagon"
     }
   }
-}
+};
 
 exports.timer = 0.5;

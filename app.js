@@ -26,4 +26,6 @@ require('./app/sockets')(io);
 // Routes
 require('./app/routes')(app);
 
+console.log("hey");
+
 server.listen(3000);

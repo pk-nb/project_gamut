@@ -14,7 +14,7 @@ function sentTimer() {
 }
 
 function sentMessage() {
-   if ($('#chatInput').val() != "") {
+   if ($('#chatInput').val() !== "") {
       emitGameMessage('chatMessage', userName + ': ' +  $('#chatInput').val() );
       $('#chatInput').val('');
    }
@@ -36,14 +36,14 @@ function sendPoke() {
 
 function broadcastGameMessage(name, message) {
   // Generic message to send
-  if (currentRoom != null) {
+  if (currentRoom !== null) {
     socket.emit("broadcastGameMessage", { name: name, message: message, room: currentRoom });
   }
 }
 
 function emitGameMessage(name, message) {
   // Generic message to send
-  if (currentRoom != null) {
+  if (currentRoom !== null) {
     socket.emit("emitGameMessage", { name: name, message: message, room: currentRoom });
   }
 }
@@ -90,7 +90,7 @@ socket.on("opponentMoneyViewUpdate", function(hexIndex) {
 });
 
 socket.on("posPlayed", function() {
-  console.log("Position already taken by old play.")
+  console.log("Position already taken by old play.");
 });
 
 socket.on("error", function(errorMessage) {

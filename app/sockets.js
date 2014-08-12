@@ -19,7 +19,7 @@ data.Queues.prototype.pushSocket = function(io, socket) {
       socket.emit('waiting', null);             // Tell client to go into waiting mode
     }
   });
-}
+};
 
 // Connects two games on message of 2+ in queue
 var queues = new data.Queues();
@@ -61,7 +61,7 @@ function formValid(gameData, socket) {
   var userGameSize = gameData[1].value;
 
   // Prevent duplicate names
-  if (us.contains(data.users, userName) || userName.length == 0) {
+  if (us.contains(data.users, userName) || userName.length === 0) {
     console.log("Name duplicate rejected");
     sendError(socket, "nameDuplicate");
     return false;
@@ -106,8 +106,8 @@ module.exports = function(io) {
           boardArray.push([]);
           for (var column = 0; column < data.types.sizes[userGameSize].arrayLength; column++) {
             boardArray[row].push(false);
-          };
-        };
+          }
+        }
 
         // Set initial pieces to used
         var c = data.types.sizes[userGameSize].startIndexes;
@@ -131,16 +131,16 @@ module.exports = function(io) {
       // get boardArray from socket
       socket.get('boardArray', function(err, boardArray) {
         var positionPlayed = false; // flag
-        for (var a = 0; a < coordinates.length && positionPlayed == false; a++) {
-          if (boardArray[coordinates[a].i][coordinates[a].j] == true)
+        for (var a = 0; a < coordinates.length && positionPlayed === false; a++) {
+          if (boardArray[coordinates[a].i][coordinates[a].j] === true)
             positionPlayed = true; // if coordinate has been played, end loop and flag is true
-        };
+        }
 
         // It's OK to play
-        if (positionPlayed == false) {
+        if (positionPlayed === false) {
           // Update board with piece
-          for (var a = 0; a < coordinates.length; a++) {
-            boardArray[coordinates[a].i][coordinates[a].j] = true; // set pieces to true
+          for (var b = 0; b < coordinates.length; b++) {
+            boardArray[coordinates[b].i][coordinates[b].j] = true; // set pieces to true
           }
 
           // Store updated array on both sockets
@@ -200,10 +200,10 @@ module.exports = function(io) {
 
     // Timer logic
     setInterval(function() {
-      data.timer;
+      //data.timer;
       socket.emit('timer', { timer: data.timer });
-    }, 500);
+    }, 500); //TODO: Use data timer over magic number
 
   }); // END .on(connection)
-} // END module.exports
+}; // END module.exports
 

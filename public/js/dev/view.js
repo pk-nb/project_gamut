@@ -55,7 +55,7 @@ jQuery( document ).ready(function( $ ) {
 
   $("#chatSubmit").click(function() {sentMessage();});
   //$('#chat').hide();
-  $("#sendPoke").click(function() { sendPoke() });
+  $("#sendPoke").click(function() { sendPoke(); });
   $('h2#waitingMessage').hide();
   $('#game').hide();
 
@@ -68,7 +68,7 @@ jQuery( document ).ready(function( $ ) {
 
     // HTML5 Form valdation for supporting browsers
     // TODO: Prevent submit on safari, ios, etc
-    if (this.checkValidity()) {};
+    if (this.checkValidity()) {}
 
     e.preventDefault();
     console.log("Form intercept!");
@@ -86,6 +86,5 @@ jQuery( document ).ready(function( $ ) {
   $('#chatLink').sidr({
     side: 'right'
   });
-
 
 });
