@@ -39,7 +39,6 @@ module.exports = function (grunt) {
       },
       sass: {
         files: ['public/**/*.sass', 'public/**/*.scss'],
-        tasks: ['sass'],
         options: {
           livereload: reloadPort
         },
@@ -51,19 +50,19 @@ module.exports = function (grunt) {
         },
       }
     },
-    sass: {
-      dist: {
-        files: [{
-          expand: true,
-          cwd: 'public/',
-          // Ignore both _partial.scss and bourbon for includes
-          src:['**/*.sass', '**/*.scss', '!**/_*.sass', '!**/_*.scss', '!bourbon/**/*.sass', '!bourbon/**/*.scss'],
-          dest: 'public/css',
-          flatten: true,
-          ext: '.css'
-        }]
-      }
-    },
+    // sass: {
+    //   dist: {
+    //     files: [{
+    //       expand: true,
+    //       cwd: 'public/',
+    //       // Ignore both _partial.scss and bourbon for includes
+    //       src:['**/*.sass', '**/*.scss', '!**/_*.sass', '!**/_*.scss', '!bourbon/**/*.sass', '!bourbon/**/*.scss'],
+    //       dest: 'public/css',
+    //       flatten: true,
+    //       ext: '.css'
+    //     }]
+    //   }
+    // },
     concat: {
       // options: {
       //   separator: ";\n\n",
@@ -117,6 +116,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
 
   // Register concat if desired
-  grunt.registerTask('default', ['sass', 'concat', 'develop', 'watch']);
-  grunt.registerTask('build', ['sass', 'concat', 'uglify', 'develop', 'watch']);
+  grunt.registerTask('default', ['concat', 'develop', 'watch']);
+  grunt.registerTask('build', ['concat', 'uglify', 'develop', 'watch']);
 };
