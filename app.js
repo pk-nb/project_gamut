@@ -7,7 +7,10 @@ var app = express();
 var env = process.env.NODE_ENV || 'development';
 
 //app.set('port', process.env.PORT || 3000);
-app.set('views', (__dirname + '/views'));
+
+process.env.PWD = process.cwd()
+
+app.set('views', (process.env.PWD + '/views'));
 app.set('view engine', 'jade');
 app.set('view options', { layout: false });
 app.use(express.favicon());
@@ -15,7 +18,7 @@ app.use(express.logger('dev'));
 app.use(express.bodyParser());
 app.use(express.methodOverride());
 app.use(app.router);
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(process.env.PWD + '/public'));
 
 
 // Socket Configuration
