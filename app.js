@@ -28,4 +28,4 @@ require('./app/routes')(app);
 
 console.log("hey");
 
-server.listen(3000);
+server.listen(process.env.PORT || 3000);
