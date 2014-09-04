@@ -1,6 +1,5 @@
-# Grunt generated files
+/public/*.css
 /public/css
-main.min.js
 
 *.sourcemaps*
 

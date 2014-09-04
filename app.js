@@ -9,11 +9,11 @@ var env = process.env.NODE_ENV || 'development';
 
 //app.set('port', process.env.PORT || 3000);
 
-process.env.PWD = process.cwd()
+// process.env.PWD = process.cwd()
 
-console.log (process.env.PWD);
+// console.log (process.env.PWD);
 
-app.set('views', (process.env.PWD + '/views'));
+app.set('views', (__dirname + '/views'));
 app.set('view engine', 'jade');
 app.set('view options', { layout: false });
 app.use(express.favicon());
@@ -25,13 +25,13 @@ app.use(app.router);
 // adding the sass middleware
 app.use(
    sass.middleware({
-       src: process.env.PWD + '/public/sass',
-       dest: process.env.PWD + '/public/css',
+       src: __dirname + '/public/sass',
+       dest: __dirname + '/public',
        debug: true
    })
 );
 
-app.use(express.static(process.env.PWD + '/public'));
+app.use(express.static(__dirname + '/public'));
 
 // Socket Configuration
 var server = http.createServer(app);
